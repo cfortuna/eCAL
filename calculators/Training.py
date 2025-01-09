@@ -1,92 +1,70 @@
-from thop import profile
+from .model_flops import FLOPCalculator, ThopCalculator
 import torch
 from torch import nn
 from typing import Dict, Union, Tuple, Callable, Optional
-from abc import ABC, abstractmethod
-
-class FLOPCalculator(ABC):
-    """Abstract base class for FLOP calculation strategies"""
-    @abstractmethod
-    def calculate(self, model: nn.Module, input_size: Tuple) -> Dict[str, Union[int, Dict]]:
-        """Calculate FLOPs for a given model"""
-        pass
-
-class ThopCalculator(FLOPCalculator):
-    """Default FLOP calculator using thop"""
-    def calculate(self, model: nn.Module, input_size: Tuple) -> Dict[str, Union[int, Dict]]:
-        input = torch.randn(input_size)
-        flops, params = profile(model, inputs=(input,))
-        
-        return {
-            'total_flops': flops,
-            'total_params': params
-        }
 
 class Training:
     """
     This class is used to estimate the flops of the model training, which is then used to estimate 
     the energy consumption of the model training.
     """
-    def __init__(self, calculator: Optional[FLOPCalculator] = None):
+    def __init__(self, model: nn.Module, calculator: Optional[FLOPCalculator] = None, input_size: Tuple,
+                 dataset_size: int, batch_size: int, num_epochs: int = 1, num_samples: int,
+                 processor_flops_per_second: float = 1e12, processor_max_power: int = 100):
         """
         Initialize Training class with optional custom FLOP calculator
         
         Args:
             calculator: Optional custom FLOPCalculator implementation
+            input_size: Tuple of input size
+            dataset_size: int of dataset size
+            batch_size: int of batch size
+            num_epochs: int of number of epochs
+            num_samples: int of number of samples
+            processor_flops_per_second: float of processor flops per second
+            processor_max_power: int of processor max power in watts
         """
         self.calculator = calculator if calculator else ThopCalculator()
+        self.model = model
+        self.input_size = input_size
+        self.dataset_size = dataset_size
+        self.batch_size = batch_size
+        self.num_epochs = num_epochs
+        self.num_samples = num_samples
+        # hardware parameters
+        self.processor_flops_per_second = processor_flops_per_second
+        self.processor_max_power = processor_max_power
         
-    def set_calculator(self, calculator: FLOPCalculator) -> None:
-        """
-        Set a new FLOP calculator
-        
-        Args:
-            calculator: FLOPCalculator implementation
-        """
-        self.calculator = calculator
-        
-    def calculate_flops(self, model: nn.Module, input_size: Tuple) -> Dict[str, Union[int, Dict]]:
-        """
-        Calculate FLOPs using the current calculator
-        
-        Args:
-            model: PyTorch model
-            input_size: Input tensor size
-            
-        Returns:
-            Dictionary containing flop calculations
-        """
-        return self.calculator.calculate(model, input_size)
+    def calculate_flops_training(self) -> Dict[str, Union[int, Dict]]:
 
-# Example custom calculator for specialized models(the calculations is probably incorrect this is just an example) 
-class TransformerCalculator(FLOPCalculator):
-    """Example custom calculator for transformer models"""
-    def calculate(self, model: nn.Module, input_size: Tuple) -> Dict[str, Union[int, Dict]]:
-        # Custom implementation for transformer models
-        # This is just an example structure
-        batch_size, seq_length = input_size[0], input_size[1]
-        
-        # Example calculation (would need proper implementation)
-        attention_flops = self._calculate_attention_flops(model, batch_size, seq_length)
-        ffn_flops = self._calculate_ffn_flops(model, batch_size, seq_length)
-        
-        return {
-            'total_flops': attention_flops + ffn_flops,
-            'breakdown': {
-                'attention': attention_flops,
-                'ffn': ffn_flops
-            }
-        }
-    
-    def _calculate_attention_flops(self, model, batch_size, seq_length):
-        # Implement attention-specific FLOP calculation
-        return 0
-        
-    def _calculate_ffn_flops(self, model, batch_size, seq_length):
-        # Implement feed-forward network FLOP calculation
-        return 0
+        forward_flops = self.calculator.calculate(self.model, self.input_size)
+        # 1 training pass takes roughly 3x a single forward pass
+        training_flops = forward_flops * 3
+        # Calculate the number of batches
 
-# Usage example:
+        # Calculate the total number of flops
+        total_flops = training_flops * self.dataset_size * self.num_epochs
+        return total_flops
+    def calculate_flops_evaluation(self) -> float:
+        # Calculate the total number of flops
+        forward_flops = self.calculator.calculate(self.model, self.input_size)
+        total_flops = forward_flops * self.num_samples
+        return total_flops
+
+    def calculate_energy_usage(self) -> float:
+        # Calculate the total number of flops
+        training_flops = self.calculate_flops_training()
+        evaluation_flops = self.calculate_flops_evaluation()
+
+        # Calculate the total energy usage
+        total_flops = training_flops + evaluation_flops
+        # Calculate the total energy usage
+        running_time = total_flops / self.processor_flops_per_second
+        # Calculate the total energy usage
+        energy_usage = running_time * self.processor_max_power
+
+        return energy_usage
+
 """
 # Default usage with thop
 training = Training()
