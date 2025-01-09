@@ -1,0 +1,52 @@
+from typing import Dict, Union
+from .PreprocessingFLOPS import (
+    PreprocessingFLOPCalculator,
+    NormalizationCalculator,
+    StandardScalingCalculator
+)
+
+class DataPreprocessing:
+    """Data preprocessing class that calculates the FLOPs for various data preprocessing tasks"""
+    
+    def __init__(self, preprocessing_type: str = 'normalization', processor_flops_per_second: float = 1e12, processor_max_power: int = 100, data_size: int = 1000):
+        """
+        Initialize DataPreprocessing class
+        
+        Args:
+            preprocessing_type: Type of preprocessing to perform
+        """
+        self.calculators = {
+            'normalization': NormalizationCalculator(),
+            'min_max_scaling': MinMaxScalingCalculator(),
+        }
+        self.set_preprocessing_type(preprocessing_type)
+        self.processor_flops_per_second = processor_flops_per_second
+        self.processor_max_power = processor_max_power
+        self.data_size = data_size
+    
+    def set_preprocessing_type(self, preprocessing_type: str) -> None:
+        """Set the preprocessing type"""
+        if preprocessing_type not in self.calculators:
+            raise ValueError(f"Unsupported preprocessing type: {preprocessing_type}")
+        self.calculator = self.calculators[preprocessing_type]
+    
+    def calculate_flops(self) -> float:
+        """
+        Calculate FLOPs for the current preprocessing type
+
+        Args:
+            data_size: Size of the data to preprocess
+        
+        Returns:
+            Total FLOPs for the current preprocessing type
+        """
+        return self.calculator.calculate_flops(self.data_size)
+
+    def calculate_energy_usage(self) -> float:
+        # Calculate the total number of flops
+        total_flops = self.calculate_flops()
+        # Calculate the total energy usage
+        total_time = total_flops / self.processor_flops_per_second
+        total_energy = total_time * self.processor_max_power
+        return total_energy
+
