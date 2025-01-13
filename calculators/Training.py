@@ -3,14 +3,17 @@ import torch
 from torch import nn
 from typing import Dict, Union, Tuple, Callable, Optional
 
+# import resnet18
+from torchvision.models import resnet18
+
 class Training:
     """
     This class is used to estimate the flops of the model training, which is then used to estimate 
     the energy consumption of the model training.
     """
-    def __init__(self, model: nn.Module, calculator: Optional[FLOPCalculator] = None, input_size: Tuple,
-                 dataset_size: int, batch_size: int, num_epochs: int = 1, num_samples: int,
-                 processor_flops_per_second: float = 1e12, processor_max_power: int = 100):
+    def __init__(self,model_name: str,
+                 batch_size: int, num_epochs: int, num_samples: int,
+                 processor_flops_per_second: float, processor_max_power: int, input_size: Tuple, evaluation_strategy: str, k_folds: int, split_ratio: float):
         """
         Initialize Training class with optional custom FLOP calculator
         
@@ -24,10 +27,22 @@ class Training:
             processor_flops_per_second: float of processor flops per second
             processor_max_power: int of processor max power in watts
         """
-        self.calculator = calculator if calculator else ThopCalculator()
-        self.model = model
+        if model_name == 'resnet18':
+            self.model = resnet18()
+            self.calculator = ThopCalculator()
+        else:
+            raise ValueError(f"Unsupported model: {model_name}")
+
+        if evaluation_strategy == 'train_test_split':
+            self.evaluation_strategy = 'train_test_split'
+            self.split_ratio = split_ratio
+        elif evaluation_strategy == 'cross_validation':
+            self.evaluation_strategy = 'cross_validation'
+            self.k_folds = k_folds
+        else:
+            raise ValueError(f"Unsupported evaluation strategy: {evaluation_strategy}")
+
         self.input_size = input_size
-        self.dataset_size = dataset_size
         self.batch_size = batch_size
         self.num_epochs = num_epochs
         self.num_samples = num_samples
@@ -37,33 +52,54 @@ class Training:
         
     def calculate_flops_training(self) -> Dict[str, Union[int, Dict]]:
 
-        forward_flops = self.calculator.calculate(self.model, self.input_size)
+        forward_flops = self.calculator.calculate(self.model, self.input_size)['total_flops']
         # 1 training pass takes roughly 3x a single forward pass
         training_flops = forward_flops * 3
         # Calculate the number of batches
+        if self.evaluation_strategy == 'train_test_split':
+            training_samples = self.num_samples * self.split_ratio
+        elif self.evaluation_strategy == 'cross_validation':
+            percentage_of_samples = 1 -  (1 / self.k_folds) # percentage of samples used for training
+            number_of_folds = self.k_folds
+            training_samples = self.num_samples * percentage_of_samples * number_of_folds
+
+        else:
+            raise ValueError(f"Unsupported evaluation strategy: {self.evaluation_strategy}")
 
         # Calculate the total number of flops
-        total_flops = training_flops * self.dataset_size * self.num_epochs
+        total_flops = training_flops * training_samples * self.num_epochs
         return total_flops
     def calculate_flops_evaluation(self) -> float:
         # Calculate the total number of flops
-        forward_flops = self.calculator.calculate(self.model, self.input_size)
-        total_flops = forward_flops * self.num_samples
+        forward_flops = self.calculator.calculate(self.model, self.input_size)['total_flops']
+        if self.evaluation_strategy == 'train_test_split':
+            evaluation_samples = self.num_samples * (1 - self.split_ratio)
+        elif self.evaluation_strategy == 'cross_validation':
+            percentage_of_samples = 1 / self.k_folds # percentage of samples used for evaluation
+            number_of_folds = self.k_folds
+            evaluation_samples = self.num_samples * percentage_of_samples * number_of_folds
+        else:
+            raise ValueError(f"Unsupported evaluation strategy: {self.evaluation_strategy}")
+
+        total_flops = forward_flops * evaluation_samples
         return total_flops
 
-    def calculate_energy_usage(self) -> float:
+    def calculate_energy(self) -> float:
         # Calculate the total number of flops
         training_flops = self.calculate_flops_training()
         evaluation_flops = self.calculate_flops_evaluation()
 
-        # Calculate the total energy usage
-        total_flops = training_flops + evaluation_flops
-        # Calculate the total energy usage
-        running_time = total_flops / self.processor_flops_per_second
-        # Calculate the total energy usage
-        energy_usage = running_time * self.processor_max_power
+        training_energy = training_flops / self.processor_flops_per_second * self.processor_max_power
+        evaluation_energy = evaluation_flops / self.processor_flops_per_second * self.processor_max_power
 
-        return energy_usage
+        # Calculate the total energy usage
+        total_energy = training_energy + evaluation_energy
+
+        return {
+            "total_energy": total_energy,
+            "training_energy": training_energy,
+            "evaluation_energy": evaluation_energy
+            }
 
 """
 # Default usage with thop

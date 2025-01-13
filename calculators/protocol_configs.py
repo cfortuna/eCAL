@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+# TODO add realistic values
 @dataclass
 class LayerProtocol:
     """Protocol metrics for a single layer"""
@@ -61,6 +61,7 @@ TRANSPORT_PROTOCOLS = {
         control_plane_overhead=0.01,
         base_energy_per_bit=0.00000001
     )
+
 }
 
 NETWORK_PROTOCOLS = {

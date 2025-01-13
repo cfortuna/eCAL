@@ -15,6 +15,14 @@ class ThopCalculator(FLOPCalculator):
         input = torch.randn(input_size)
         forward_flops_per_sample, params = profile(model, inputs=(input,))
         return {
-            'total_flops': forward_flops_per_sample
+            'total_flops': forward_flops_per_sample,
             'total_params': params
+        }
+
+class CANCalculator(FLOPCalculator):
+    def calculate(self, model: nn.Module, input_size: Tuple) -> Dict[str, Union[int, Dict]]:
+        # DO CALCULATION HERE
+        return {
+            'total_flops': 0,
+            'total_params': 0
         }

@@ -33,14 +33,8 @@ class NormalizationCalculator(PreprocessingFLOPCalculator):
         total_flops = (6 * data_size) + 1
 
         
-        return {
-            'total_flops': total_flops,
-            'breakdown': {
-                'mean_calculation': mean_flops,
-                'std_calculation': std_flops,
-                'normalization': normalization_flops
-            }
-        }
+        return total_flops
+
 
 class MinMaxScalingCalculator(PreprocessingFLOPCalculator):
     def calculate_flops(self, data_size: int) -> Dict[str, Union[int, Dict]]:
@@ -53,7 +47,5 @@ class MinMaxScalingCalculator(PreprocessingFLOPCalculator):
 
         scaling_flops = data_size * 2 + 1 # 
         
-        return {
-            'total_flops': scaling_flops,
-        }
+        return scaling_flops
 

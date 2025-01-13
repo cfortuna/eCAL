@@ -1,11 +1,12 @@
 from typing import Dict, Union, Tuple
-from .model_flops import FLOPCalculator
+from .model_flops import FLOPCalculator, ThopCalculator
+from torchvision.models import resnet18
 class Inference:
     """
     This class is used to estimate the flops of the model inference, which is then used to estimate 
     the energy consumption of the model inference.
     """
-    def __init__(self, calculator: FLOPCalculator):
+    def __init__(self,model_name: str, input_size: Tuple, num_samples: int, processor_flops_per_second: float, processor_max_power: int):
         """
         Initialize Inference class
         Args:
@@ -16,8 +17,11 @@ class Inference:
             processor_flops_per_second: float of processor flops per second
             processor_max_power: int of processor max power in watts
         """
-        self.calculator = calculator
-        self.model = model
+        if model_name == 'resnet18':
+            self.calculator = ThopCalculator()
+            self.model = resnet18()
+        else:
+            raise ValueError(f"Model type {model_name} not supported, you can implement your own calculator in model_flops.py class")
         self.input_size = input_size
         self.num_samples = num_samples
         # hardware parameters
@@ -27,7 +31,7 @@ class Inference:
 
     
 
-    def calculate_flops(self, model: nn.Module, input_size: Tuple, num_samples: int = 1) -> Dict[str, Union[int, Dict]]:
+    def calculate_flops(self) -> Dict[str, Union[int, Dict]]:
         """
         Calculate FLOPs for the current inference
         Args:
@@ -38,11 +42,11 @@ class Inference:
         Returns:
             Total FLOPs for the current inference   
         """
-        forward_flops = self.calculator.calculate(model, input_size)
-        total_flops = forward_flops * num_samples
+        forward_flops = self.calculator.calculate(self.model, self.input_size)['total_flops']
+        total_flops = forward_flops * self.num_samples
         return total_flops
 
-    def calculate_energy_usage(self) -> float:
+    def calculate_energy(self) -> float:
         """
         Calculate the energy usage of the current inference
 

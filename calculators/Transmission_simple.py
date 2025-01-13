@@ -1,10 +1,6 @@
 from typing import Dict, Union
-from protocol_configs import (
-    LayerProtocol, APPLICATION_PROTOCOLS, PRESENTATION_PROTOCOLS,
-    SESSION_PROTOCOLS, TRANSPORT_PROTOCOLS, NETWORK_PROTOCOLS,
-    DATALINK_PROTOCOLS, PHYSICAL_PROTOCOLS
-)
-
+from .protocol_configs import *
+   
 class Transmission_simple:
     """
     Simplified calculator for network energy consumption that allows protocol selection
@@ -54,7 +50,7 @@ class Transmission_simple:
         
         return {
             'total_bits': total_bits,
-            'energy': total_energy,
+            'total_energy': total_energy,
             'breakdown': {
                 'data_plane_overhead': data_plane_bits,
                 'control_plane_overhead': control_plane_bits,
