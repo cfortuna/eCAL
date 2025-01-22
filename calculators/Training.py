@@ -1,10 +1,10 @@
-from .model_flops import FLOPCalculator, ThopCalculator
 import torch
 from torch import nn
 from typing import Dict, Union, Tuple, Callable, Optional
-
+from .model_flops import FLOPCalculator, FlopsCalculatorFactory
 # import resnet18
 from torchvision.models import resnet18
+
 
 class Training:
     """
@@ -29,9 +29,10 @@ class Training:
         """
         if model_name == 'resnet18':
             self.model = resnet18()
-            self.calculator = ThopCalculator()
         else:
-            raise ValueError(f"Unsupported model: {model_name}")
+            self.model = model_name
+
+        self.calculator = FlopsCalculatorFactory.create_calculator(self.model)
 
         if evaluation_strategy == 'train_test_split':
             self.evaluation_strategy = 'train_test_split'
@@ -65,7 +66,7 @@ class Training:
 
         else:
             raise ValueError(f"Unsupported evaluation strategy: {self.evaluation_strategy}")
-
+        print("Trainign flops: ", training_flops, "Training samples: ", training_samples)
         # Calculate the total number of flops
         total_flops = training_flops * training_samples * self.num_epochs
         return total_flops

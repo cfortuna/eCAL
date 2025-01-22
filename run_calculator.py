@@ -27,6 +27,7 @@ def calculate_total_energy():
         preprocessing_type=cfg.PREPROCESSING_TYPE,
         processor_flops_per_second=cfg.PROCESSOR_FLOPS_PER_SECOND,
         processor_max_power=cfg.PROCESSOR_MAX_POWER,
+        time_steps=cfg.TIME_STEPS, # only needed for GADF
     )
     training = Training(
         model_name=cfg.MODEL_NAME,

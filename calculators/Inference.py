@@ -1,5 +1,5 @@
 from typing import Dict, Union, Tuple
-from .model_flops import FLOPCalculator, ThopCalculator
+from .model_flops import FLOPCalculator, FlopsCalculatorFactory
 from torchvision.models import resnet18
 class Inference:
     """
@@ -18,10 +18,10 @@ class Inference:
             processor_max_power: int of processor max power in watts
         """
         if model_name == 'resnet18':
-            self.calculator = ThopCalculator()
             self.model = resnet18()
         else:
-            raise ValueError(f"Model type {model_name} not supported, you can implement your own calculator in model_flops.py class")
+            self.model = model_name
+        self.calculator = FlopsCalculatorFactory.create_calculator(self.model)
         self.input_size = input_size
         self.num_samples = num_samples
         # hardware parameters
