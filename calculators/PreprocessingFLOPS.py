@@ -33,7 +33,9 @@ class NormalizationCalculator(PreprocessingFLOPCalculator):
         total_flops = (6 * data_size) + 1
 
         
-        return total_flops
+        return {"total_flops" : total_flops,
+                "data_shape" : None
+                }
 
 
 class MinMaxScalingCalculator(PreprocessingFLOPCalculator):
@@ -47,5 +49,24 @@ class MinMaxScalingCalculator(PreprocessingFLOPCalculator):
 
         scaling_flops = data_size * 2 + 1 # 
         
-        return scaling_flops
+        return {"total_flops" :     scaling_flops,
+                "data_shape" : None
+                }
 
+class GramianDifferenceFieldCalculator(PreprocessingFLOPCalculator):
+    def __init__(self, time_steps: int):
+        self.time_steps = time_steps
+    def calculate_flops(self, data_size: int) -> Dict[str, Union[int, Dict]]:
+        # 
+        # 1. perform minmax 2 times -> 2 * data_size +1 
+        # 2. compute GADF flops based on pyTS implementation - > (5 * time_steps + time_steps * time_steps) * data_size
+        minmax_calculator = MinMaxScalingCalculator()
+        minmax_flops = minmax_calculator.calculate_flops(data_size* self.time_steps)
+
+        gadf_flops = (5*self.time_steps + self.time_steps * self.time_steps) * data_size
+        total_flops = minmax_flops + gadf_flops
+        total_values = data_size * self.time_steps * self.time_steps # data size increases due to timeseries to image transformation
+        return {
+            "total_flops" : total_flops,
+            "data_shape" : (data_size, self.time_steps, self.time_steps)
+                }

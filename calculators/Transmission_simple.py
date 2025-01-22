@@ -87,14 +87,14 @@ class Transmission_simple:
         layer_results = {}
         
         for layer_name, protocol in self.protocols.items():
-            layer_result = self.calculate_layer_energy(protocol, current_bits)
+            curr_layer_result = self.calculate_layer_energy(protocol, current_bits)
             layer_results[layer_name] = {
                 'protocol': protocol.name,
-                'energy': layer_result['energy'],
-                'breakdown': layer_result['breakdown']
+                'energy': curr_layer_result['total_energy'],
+                'breakdown': curr_layer_result['breakdown']
             }
-            total_energy += layer_result['energy']
-            current_bits = layer_result['total_bits']
+            total_energy += curr_layer_result['total_energy']
+            current_bits = curr_layer_result['total_bits']
         
         return {
             'total_energy': total_energy,
