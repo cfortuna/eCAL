@@ -13,7 +13,7 @@ class Training:
     """
     def __init__(self,model_name: str,
                  batch_size: int, num_epochs: int, num_samples: int,
-                 processor_flops_per_second: float, processor_max_power: int, input_size: Tuple, evaluation_strategy: str, k_folds: int, split_ratio: float):
+                 processor_flops_per_second: float, processor_max_power: int, input_size: Tuple, evaluation_strategy: str, k_folds: int, split_ratio: float, calculator: Optional[FLOPCalculator] = None):
         """
         Initialize Training class with optional custom FLOP calculator
         
@@ -31,8 +31,11 @@ class Training:
             self.model = resnet18()
         else:
             self.model = model_name
-
-        self.calculator = FlopsCalculatorFactory.create_calculator(self.model)
+            
+        if calculator is not None:
+            self.calculator = calculator
+        else:
+            self.calculator = FlopsCalculatorFactory.create_calculator(self.model)
 
         if evaluation_strategy == 'train_test_split':
             self.evaluation_strategy = 'train_test_split'

@@ -37,6 +37,14 @@ class CalFlopsCalculatorPT(FLOPCalculator):
 
 
 class CANCalculator(FLOPCalculator):
+    def __init__(self, grid_size: int,  num_layers : int, din : int, dout : int,  k: int = 3, num_samples: int = 1, num_classes: int = 2):
+        self.G = grid_size
+        self.din = din
+        self.dout = dout
+        self.k = k
+        self.L = num_layers
+        self.T = num_samples
+        self.C = num_classes
     def calculate(self, model: nn.Module, input_size: Tuple) -> Dict[str, Union[int, Dict]]:
         # DO CALCULATION HERE
         """
@@ -55,7 +63,38 @@ class CANCalculator(FLOPCalculator):
 
          learnable parameters = (din * dout) *(G + k + 3)+ dout
         """
-        k = 3 # b-spline degree
+        k = self.k  # b-spline degree
+        G = self.G  
+        
+        T = self.T
+        L = self.L
+        C = self.C
+        din = self.din
+        dout = self.dout
+        M = din * dout
+
+
+        
+        # Non-linear function FLOPS (assuming SiLU activation) (x/1+e^(-x)) TODO check this
+        nonlinear_flops = 2 
+
+        
+        first_term = nonlinear_flops * T + T * M * (9 * k * (G + 1.5 * k) + 2 * G - 2.5 * k + 3)
+        middle_term = (L - 2) * (nonlinear_flops * M + M * M * (9 * k * (G + 1.5 * k) + 2 * G - 2.5 * k + 3))
+        last_term = nonlinear_flops * M + M * C * (9 * k * (G + 1.5 * k) + 2 * G - 2.5 * k + 3)
+        
+        total_flops = first_term + middle_term + last_term
+        total_params = (din * dout) * (G + k + 3) + dout
+        
+        return {
+            'total_flops': int(total_flops),
+            'total_params': int(total_params),
+            'breakdown': {
+                'input_layer_flops': int(first_term),
+                'middle_layers_flops': int(middle_term),
+                'output_layer_flops': int(last_term)
+            }
+        }
 
 
         raise NotImplementedError("CANCalculator is not implemented")

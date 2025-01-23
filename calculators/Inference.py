@@ -1,4 +1,4 @@
-from typing import Dict, Union, Tuple
+from typing import Dict, Union, Tuple, Optional
 from .model_flops import FLOPCalculator, FlopsCalculatorFactory
 from torchvision.models import resnet18
 class Inference:
@@ -6,7 +6,7 @@ class Inference:
     This class is used to estimate the flops of the model inference, which is then used to estimate 
     the energy consumption of the model inference.
     """
-    def __init__(self,model_name: str, input_size: Tuple, num_samples: int, processor_flops_per_second: float, processor_max_power: int):
+    def __init__(self,model_name: str, input_size: Tuple, num_samples: int, processor_flops_per_second: float, processor_max_power: int, calculator: Optional[FLOPCalculator] = None):
         """
         Initialize Inference class
         Args:
@@ -21,7 +21,11 @@ class Inference:
             self.model = resnet18()
         else:
             self.model = model_name
-        self.calculator = FlopsCalculatorFactory.create_calculator(self.model)
+
+        if calculator is not None:
+            self.calculator = calculator
+        else:
+            self.calculator = FlopsCalculatorFactory.create_calculator(self.model)
         self.input_size = input_size
         self.num_samples = num_samples
         # hardware parameters

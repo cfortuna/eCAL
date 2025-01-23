@@ -21,7 +21,7 @@ NUM_DISKS = 1
 
 
 ######################################## Training ########################################
-MODEL_NAME = "baichuan-inc/Baichuan-13B-Chat" # resnet18
+MODEL_NAME ="CAN"#"baichuan-inc/Baichuan-13B-Chat" # resnet18
 NUM_EPOCHS = 10
 BATCH_SIZE = 32
 # INPUT_SIZE = (1, 3, 224, 224)# 4d input for resnet # 
@@ -35,6 +35,9 @@ SPLIT_RATIO = 0.8 # Only used if EVALUATION_STRATEGY is train_test_split
 NUM_LAYERS = 10
 GRID_SIZE = 10
 NUM_CLASSES = 10
+DIN = 10
+DOUT = 10
+
 
 
 ######################################## Inference ########################################

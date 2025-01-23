@@ -1,9 +1,9 @@
-#TODO: Add the run_calculator.py file
 from calculators.Storage import Storage
 from calculators.Transmission_simple import Transmission_simple
 from calculators.DataPreprocessing import DataPreprocessing
 from calculators.Inference import Inference
 from calculators.Training import Training
+from calculators.model_flops import CANCalculator
 import calculator_config as cfg
 
 def calculate_total_energy():
@@ -29,6 +29,20 @@ def calculate_total_energy():
         processor_max_power=cfg.PROCESSOR_MAX_POWER,
         time_steps=cfg.TIME_STEPS, # only needed for GADF
     )
+    if cfg.MODEL_NAME == "CAN":
+        calculator = CANCalculator(
+            num_layers=cfg.NUM_LAYERS,
+            grid_size=cfg.GRID_SIZE,
+            num_classes=cfg.NUM_CLASSES,
+            din=cfg.DIN,
+            dout=cfg.DOUT,
+            num_samples=cfg.TIME_STEPS # for time series
+
+        )
+    else:
+        calculator = None
+
+
     training = Training(
         model_name=cfg.MODEL_NAME,
         num_epochs=cfg.NUM_EPOCHS,
@@ -39,15 +53,18 @@ def calculate_total_energy():
         input_size=cfg.INPUT_SIZE,
         evaluation_strategy=cfg.EVALUATION_STRATEGY,
         k_folds=cfg.K_FOLDS,
-        split_ratio=cfg.SPLIT_RATIO
+        split_ratio=cfg.SPLIT_RATIO,
+        calculator=calculator
     )
+    
     
     inference = Inference(
         model_name=cfg.MODEL_NAME,
         input_size=cfg.INPUT_SIZE,
         num_samples=cfg.NUM_INFERENCES,
         processor_flops_per_second=cfg.PROCESSOR_FLOPS_PER_SECOND,
-        processor_max_power=cfg.PROCESSOR_MAX_POWER
+        processor_max_power=cfg.PROCESSOR_MAX_POWER,
+        calculator=calculator
     )
 
 
