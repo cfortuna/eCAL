@@ -14,7 +14,7 @@ class DataPreprocessing:
         self.calculators = {
             'normalization': NormalizationCalculator(),
             'min_max_scaling': MinMaxScalingCalculator(),
-            'gramian_difference_field': GramianDifferenceFieldCalculator(time_steps)
+            'GADF': GramianDifferenceFieldCalculator(time_steps)
         }
         self.set_preprocessing_type(preprocessing_type)
         self.processor_flops_per_second = processor_flops_per_second
@@ -42,10 +42,10 @@ class DataPreprocessing:
         # Calculate the total number of flops
         calc_dict = self.calculate_flops(data_bits)
         total_flops = calc_dict['total_flops']
-        data_shape = calc_dict['data_shape']
-        if data_shape is not None:
-            #TODO implement handling for GADF
-            raise NotImplementedError("GADF handling is not implemented")
+        # data_shape = calc_dict['data_shape']
+        # if data_shape is not None:
+        #     #TODO implement handling for GADF
+        #     raise NotImplementedError("GADF handling is not implemented")
         # Calculate the total energy usage
         total_time = total_flops / self.processor_flops_per_second
         total_energy = total_time * self.processor_max_power

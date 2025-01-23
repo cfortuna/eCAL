@@ -61,7 +61,7 @@ class GramianDifferenceFieldCalculator(PreprocessingFLOPCalculator):
         # 1. perform minmax 2 times -> 2 * data_size +1 
         # 2. compute GADF flops based on pyTS implementation - > (5 * time_steps + time_steps * time_steps) * data_size
         minmax_calculator = MinMaxScalingCalculator()
-        minmax_flops = minmax_calculator.calculate_flops(data_size* self.time_steps)
+        minmax_flops = minmax_calculator.calculate_flops(data_size* self.time_steps)["total_flops"]
 
         gadf_flops = (5*self.time_steps + self.time_steps * self.time_steps) * data_size
         total_flops = minmax_flops + gadf_flops

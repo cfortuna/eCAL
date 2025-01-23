@@ -97,7 +97,7 @@ if __name__ == "__main__":
     print("\nEnergy Consumption Results (in Joules):")
     print("-" * 40)
     for component, energy in energy_results.items():
-        print(f"{component.capitalize()}: {energy:.2f} J")
+        print(f"{component.capitalize()}: {energy:.4f} J ({energy/energy_results['total']*100:.4f} %)")
 
 
 
