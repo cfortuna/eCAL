@@ -36,7 +36,7 @@ class CalFlopsCalculatorPT(FLOPCalculator):
         return {"total_flops": flops, "total_params": params}
 
 
-class CANCalculator(FLOPCalculator):
+class KANCalculator(FLOPCalculator):
     def __init__(self, grid_size: int,  num_layers : int, din : int, dout : int,  k: int = 3, num_samples: int = 1, num_classes: int = 2):
         self.G = grid_size
         self.din = din

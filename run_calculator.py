@@ -3,7 +3,7 @@ from calculators.Transmission_simple import Transmission_simple
 from calculators.DataPreprocessing import DataPreprocessing
 from calculators.Inference import Inference
 from calculators.Training import Training
-from calculators.model_flops import CANCalculator
+from calculators.model_flops import KANCalculator
 import calculator_config as cfg
 
 def calculate_total_energy():
@@ -29,8 +29,8 @@ def calculate_total_energy():
         processor_max_power=cfg.PROCESSOR_MAX_POWER,
         time_steps=cfg.TIME_STEPS, # only needed for GADF
     )
-    if cfg.MODEL_NAME == "CAN":
-        calculator = CANCalculator(
+    if cfg.MODEL_NAME == "KAN":
+        calculator = KANCalculator(
             num_layers=cfg.NUM_LAYERS,
             grid_size=cfg.GRID_SIZE,
             num_classes=cfg.NUM_CLASSES,
@@ -69,12 +69,12 @@ def calculate_total_energy():
 
 
     # Calculate energy for each component
-    transmission_calculation = transmission.calculate_energy(cfg.DATA_SIZE*cfg.FLOAT_PRECISION)
+    transmission_calculation = transmission.calculate_energy(cfg.DATA_SIZE*cfg.FLOAT_PRECISION*cfg.TIME_STEPS)
     transmission_energy = transmission_calculation['total_energy']
-    storage_calculation = storage.calculate_energy(cfg.DATA_SIZE*cfg.FLOAT_PRECISION)
+    storage_calculation = storage.calculate_energy(cfg.DATA_SIZE*cfg.FLOAT_PRECISION*cfg.TIME_STEPS)
     storage_energy = storage_calculation['total_energy']
     
-    preprocessing_calculation = preprocessing.calculate_energy(cfg.DATA_SIZE*cfg.FLOAT_PRECISION)
+    preprocessing_calculation = preprocessing.calculate_energy(cfg.DATA_SIZE*cfg.FLOAT_PRECISION, cfg.TIME_STEPS)
     preprocessing_energy = preprocessing_calculation['total_energy']
 
     training_energy_calculation = training.calculate_energy()

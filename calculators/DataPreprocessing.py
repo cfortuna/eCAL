@@ -14,8 +14,9 @@ class DataPreprocessing:
         self.calculators = {
             'normalization': NormalizationCalculator(),
             'min_max_scaling': MinMaxScalingCalculator(),
-            'GADF': GramianDifferenceFieldCalculator(time_steps)
+            'GADF': GramianDifferenceFieldCalculator()
         }
+        self.preprocessing_type = preprocessing_type
         self.set_preprocessing_type(preprocessing_type)
         self.processor_flops_per_second = processor_flops_per_second
         self.processor_max_power = processor_max_power
@@ -26,7 +27,7 @@ class DataPreprocessing:
             raise ValueError(f"Unsupported preprocessing type: {preprocessing_type}")
         self.calculator = self.calculators[preprocessing_type]
     
-    def calculate_flops(self, data_bits: int) -> float:
+    def calculate_flops(self, data_bits: int, time_steps = 1) -> float:
         """
         Calculate FLOPs for the current preprocessing type
 
@@ -36,11 +37,17 @@ class DataPreprocessing:
         Returns:
             Total FLOPs for the current preprocessing type
         """
+        if self.preprocessing_type == 'GADF':
+            return self.calculator.calculate_flops(data_bits, time_steps)
+            
         return self.calculator.calculate_flops(data_bits)
 
-    def calculate_energy(self, data_bits: int) -> float:
+    def calculate_energy(self, data_bits: int, time_steps : int) -> float:
         # Calculate the total number of flops
-        calc_dict = self.calculate_flops(data_bits)
+        if self.preprocessing_type == 'GADF':
+            calc_dict = self.calculate_flops(data_bits, time_steps)
+        else:
+            calc_dict = self.calculate_flops(data_bits*time_steps)
         total_flops = calc_dict['total_flops']
         # data_shape = calc_dict['data_shape']
         # if data_shape is not None:
