@@ -12,8 +12,8 @@ class LayerProtocol:
 APPLICATION_PROTOCOLS = {
     'HTTP': LayerProtocol(
         name='HTTP',
-        data_plane_overhead=0.05,      # 5% headers and data formatting
-        control_plane_overhead=0.02,    # 2% control messages
+        data_plane_overhead=0.1,      # 5% headers and data formatting
+        control_plane_overhead=0.05,    # 2% control messages
         base_energy_per_bit=0.00000001 # 10 nJ/bit
     ),
     'FTP': LayerProtocol(
@@ -21,6 +21,12 @@ APPLICATION_PROTOCOLS = {
         data_plane_overhead=0.03,
         control_plane_overhead=0.04,
         base_energy_per_bit=0.00000001
+    ),
+    'Generic_application': LayerProtocol(
+        name='Generic_application',
+        data_plane_overhead=0.1,
+        control_plane_overhead=0.05,
+        base_energy_per_bit=2.857142857142857e-09
     )
 }
 
@@ -36,6 +42,12 @@ PRESENTATION_PROTOCOLS = {
         data_plane_overhead=0.07,
         control_plane_overhead=0.04,
         base_energy_per_bit=0.00000002
+    ),
+    'Generic_presentation': LayerProtocol(
+        name='Generic_presentation',
+        data_plane_overhead=0.1,
+        control_plane_overhead=0.05,
+        base_energy_per_bit=2.857142857142857e-09
     )
 }
 
@@ -45,6 +57,12 @@ SESSION_PROTOCOLS = {
         data_plane_overhead=0.02,
         control_plane_overhead=0.02,
         base_energy_per_bit=0.00000001
+    ),
+    'Generic_session': LayerProtocol(
+        name='Generic_session',
+        data_plane_overhead=0.1,
+        control_plane_overhead=0.05,
+        base_energy_per_bit=2.857142857142857e-09
     )
 }
 
@@ -60,6 +78,12 @@ TRANSPORT_PROTOCOLS = {
         data_plane_overhead=0.02,
         control_plane_overhead=0.01,
         base_energy_per_bit=0.00000001
+    ),
+    'Generic_transport': LayerProtocol(
+        name='Generic_transport',
+        data_plane_overhead=0.1,
+        control_plane_overhead=0.05,
+        base_energy_per_bit=2.857142857142857e-09
     )
 
 }
@@ -76,6 +100,12 @@ NETWORK_PROTOCOLS = {
         data_plane_overhead=0.04,
         control_plane_overhead=0.05,
         base_energy_per_bit=0.00000002
+    ),
+    'Generic_network': LayerProtocol(
+        name='Generic_network',
+        data_plane_overhead=0.1,
+        control_plane_overhead=0.05,
+        base_energy_per_bit=2.857142857142857e-09
     )
 }
 
@@ -91,6 +121,12 @@ DATALINK_PROTOCOLS = {
         data_plane_overhead=0.06,
         control_plane_overhead=0.08,
         base_energy_per_bit=0.00000004
+    ),
+    'Generic_datalink': LayerProtocol(
+        name='Generic_datalink',
+        data_plane_overhead=0.1,
+        control_plane_overhead=0.05,
+        base_energy_per_bit=2.857142857142857e-09
     )
 }
 
@@ -106,5 +142,11 @@ PHYSICAL_PROTOCOLS = {
         data_plane_overhead=0.08,
         control_plane_overhead=0.12,
         base_energy_per_bit=0.00000005
+    ),
+    'Generic_physical': LayerProtocol(
+        name='Generic_physical',
+        data_plane_overhead=0.1,
+        control_plane_overhead=0.05,
+        base_energy_per_bit=2.857142857142857e-09
     )
 } 
