@@ -69,7 +69,6 @@ class Training:
 
         else:
             raise ValueError(f"Unsupported evaluation strategy: {self.evaluation_strategy}")
-        print("Trainign flops: ", training_flops, "Training samples: ", training_samples)
         # Calculate the total number of flops
         total_flops = training_flops * training_samples * self.num_epochs
         return total_flops
