@@ -71,21 +71,48 @@ def calculate_total_energy():
     # Calculate energy for each component
     transmission_calculation = transmission.calculate_energy(cfg.NUM_SAMPLES*cfg.FLOAT_PRECISION*cfg.SAMPLE_SIZE)
     transmission_energy = transmission_calculation['total_energy']
+    transmission_bits = transmission_calculation['total_bits']
+
     storage_calculation = storage.calculate_energy(cfg.NUM_SAMPLES*cfg.FLOAT_PRECISION*cfg.SAMPLE_SIZE)
     storage_energy = storage_calculation['total_energy']
+    storage_bits = storage_calculation['details']['raw_storage_bits']
     
     preprocessing_calculation = preprocessing.calculate_energy(cfg.NUM_SAMPLES*cfg.FLOAT_PRECISION, cfg.SAMPLE_SIZE)
     preprocessing_energy = preprocessing_calculation['total_energy']
+    preprocessing_bits = preprocessing_calculation['total_bits']
 
     training_energy_calculation = training.calculate_energy()
     training_energy = training_energy_calculation['training_energy']
     evaluation_energy = training_energy_calculation['evaluation_energy']
 
-    
-    inference_energy = inference.calculate_energy()
-    
+    if cfg.EVALUATION_STRATEGY == 'train_test_split':
+        training_bits = cfg.NUM_SAMPLES * cfg.FLOAT_PRECISION * cfg.SAMPLE_SIZE * cfg.SPLIT_RATIO
+        evaluation_bits = cfg.NUM_SAMPLES * cfg.FLOAT_PRECISION * cfg.SAMPLE_SIZE * (1 - cfg.SPLIT_RATIO)
+    elif cfg.EVALUATION_STRATEGY == 'cross_validation':
+        training_bits = cfg.NUM_SAMPLES * cfg.FLOAT_PRECISION * cfg.SAMPLE_SIZE * (1 - 1 / cfg.K_FOLDS)
+        evaluation_bits = cfg.NUM_SAMPLES * cfg.FLOAT_PRECISION * cfg.SAMPLE_SIZE * (1 / cfg.K_FOLDS)
+    else:
+        raise ValueError(f"Unsupported evaluation strategy: {cfg.EVALUATION_STRATEGY}")
 
     
+    inference_energy = inference.calculate_energy()
+    inference_bits = cfg.NUM_INFERENCES * cfg.FLOAT_PRECISION * cfg.SAMPLE_SIZE
+    
+    inference_transmission = transmission.calculate_energy(cfg.NUM_INFERENCES*cfg.FLOAT_PRECISION*cfg.SAMPLE_SIZE)
+    inference_transmission_energy = inference_transmission["total_energy"]
+    inference_transmission_bits = inference_transmission["total_bits"]
+
+
+    inference_storage = storage.calculate_energy(cfg.NUM_INFERENCES*cfg.FLOAT_PRECISION*cfg.SAMPLE_SIZE)
+    inference_storage_energy = inference_storage["total_energy"]
+    inference_storage_bits = inference_storage["details"]["raw_storage_bits"]
+
+    inference_preprocessing = preprocessing.calculate_energy(cfg.NUM_INFERENCES*cfg.FLOAT_PRECISION, cfg.SAMPLE_SIZE)
+    inference_preprocessing_energy = inference_preprocessing["total_energy"]
+    inference_preprocessing_bits = inference_preprocessing["total_bits"]
+    
+
+    inference_process = inference_energy + inference_transmission_energy + inference_storage_energy + inference_preprocessing_energy
     # Sum up total energy consumption
     total_energy = (
         transmission_energy +
@@ -93,7 +120,7 @@ def calculate_total_energy():
         preprocessing_energy +
         training_energy +
         evaluation_energy+
-        inference_energy 
+        inference_process
 )
     
     return {
@@ -103,7 +130,9 @@ def calculate_total_energy():
         'training': training_energy,
         'evaluation': evaluation_energy,
         'inference': inference_energy,
-        'total': total_energy
+        'inference_process' : inference_process,
+        'total': total_energy,
+        'total_bits' : transmission_bits + storage_bits + preprocessing_bits + training_bits + evaluation_bits + (inference_transmission_bits + inference_storage_bits + inference_preprocessing_bits + inference_bits)
     }
 
 if __name__ == "__main__":
@@ -114,8 +143,14 @@ if __name__ == "__main__":
     print("\nEnergy Consumption Results (in Joules):")
     print("-" * 40)
     for component, energy in energy_results.items():
+        if component.capitalize() == "Total_bits":
+            continue
         print(f"{component.capitalize()}: {energy:.4f} J ({energy/energy_results['total']*100:.4f} %)")
 
+
+    
+    eCal = energy_results['total']/ energy_results['total_bits']
+    print(f"eCAL: {eCal} J/bit")
 
 
 

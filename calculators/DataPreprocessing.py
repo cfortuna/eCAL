@@ -56,5 +56,8 @@ class DataPreprocessing:
         # Calculate the total energy usage
         total_time = total_flops / self.processor_flops_per_second
         total_energy = total_time * self.processor_max_power
-        return {"total_energy": total_energy}
+        return {
+            "total_energy": total_energy,
+            "total_bits" : data_bits* time_steps,
+                }
 
