@@ -1,37 +1,37 @@
 ######################################## Transmission ########################################
 # select the protocol for each layer
-PHYSICAL_PROTOCOLS = "WIFI_PHY"
-DATALINK_PROTOCOLS = "ETHERNET"
-NETWORK_PROTOCOLS = "IPv4"
-TRANSPORT_PROTOCOLS = "TCP"
-SESSION_PROTOCOLS = "RPC"
-PRESENTATION_PROTOCOLS = "TLS"
-APPLICATION_PROTOCOLS = "HTTP"
-# Select transmission failure rate causing retransmission given as a float between 0 and 1
-FAILURE_RATE = 0.0
+PHYSICAL_PROTOCOLS = "Generic_physical" # set the protocol for the physical layer
+DATALINK_PROTOCOLS = "Generic_datalink" # set the protocol for the datalink layer
+NETWORK_PROTOCOLS = "Generic_network" # set the protocol for the network layer
+TRANSPORT_PROTOCOLS = "Generic_transport" # set the protocol for the transport layer
+SESSION_PROTOCOLS = "Generic_session" # set the protocol for the session layer
+PRESENTATION_PROTOCOLS = "Generic_presentation" # set the protocol for the presentation layer
+APPLICATION_PROTOCOLS = "Generic_application" # set the protocol for the application layer
+
+FAILURE_RATE = 0.0 # Select transmission failure rate causing retransmission given as a float between 0 and 1
 
 
 ######################################## Data Preprocessing ########################################
-PREPROCESSING_TYPE = "normalization"
+PREPROCESSING_TYPE = "normalization" # set the preprocessing to apply to the data options: normalization, min_max_scaling, GADF
 
 ######################################## Storage ########################################
-STORAGE_TYPE = "HDD"
-RAID_LEVEL = "NO_RAID"
-NUM_DISKS = 1
+STORAGE_TYPE = "HDD" # set the storage type to use options: HDD, SSD
+RAID_LEVEL = "NO_RAID" # set the RAID level to use options: RAID0, RAID1, RAID5, RAID6, NO_RAID
+NUM_DISKS = 1 # set the number of disks to use only relevant if RAID_LEVEL is not NO_RAID
 
 
 ######################################## Training ########################################
-MODEL_NAME ="CAN"#"baichuan-inc/Baichuan-13B-Chat" # resnet18
+MODEL_NAME ="KAN" # set which model to use examples: KAN, resnet18, baichuan-inc/Baichuan-13B-Chat
 NUM_EPOCHS = 10
 BATCH_SIZE = 32
-# INPUT_SIZE = (1, 3, 224, 224)# 4d input for resnet # 
-INPUT_SIZE = (1,128) # batch, max_seq_length for llm
-EVALUATION_STRATEGY = "cross_validation" # train_test_split or cross_validation
+INPUT_SIZE = (1, 3, 224, 224) # 4d input for resnet # (1,128) # batch, max_seq_length for llm
+
+EVALUATION_STRATEGY = "cross_validation" # set the evaluation strategy options: cross_validation, train_test_split
 K_FOLDS = 5 # Only used if EVALUATION_STRATEGY is cross_validation
 SPLIT_RATIO = 0.8 # Only used if EVALUATION_STRATEGY is train_test_split
 
 
-#CAN specfic
+#CAN specfic parameters 
 NUM_LAYERS = 10
 GRID_SIZE = 10
 NUM_CLASSES = 10
@@ -41,14 +41,14 @@ DOUT = 10
 
 
 ######################################## Inference ########################################
-NUM_INFERENCES = 10000
+NUM_INFERENCES = 10000 # number of inferences to run
 
 
 # GENERAL CONFIG
-DATA_SIZE = 1000
-FLOAT_PRECISION = 64
-PROCESSOR_FLOPS_PER_SECOND = 1e12
-PROCESSOR_MAX_POWER = 100
+NUM_SAMPLES = 1000 # number of samples that are used to calculate the energy consumption
+FLOAT_PRECISION = 64 # number of bits used to represent a floating point number
+PROCESSOR_FLOPS_PER_SECOND = 1e12 # theoretical maximum number of floating point operations per second for the processor
+PROCESSOR_MAX_POWER = 100 # maximum power consumption of the processor in Watts
 
 # Timeseries specific
-TIME_STEPS = 100 # length of the timeseries
+SAMPLE_SIZE = 100 # size of a single sample e.g. number of timesteps in a timeseries or number of pixels in an image

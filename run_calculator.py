@@ -27,7 +27,7 @@ def calculate_total_energy():
         preprocessing_type=cfg.PREPROCESSING_TYPE,
         processor_flops_per_second=cfg.PROCESSOR_FLOPS_PER_SECOND,
         processor_max_power=cfg.PROCESSOR_MAX_POWER,
-        time_steps=cfg.TIME_STEPS, # only needed for GADF
+        time_steps=cfg.SAMPLE_SIZE, # only needed for GADF
     )
     if cfg.MODEL_NAME == "KAN":
         calculator = KANCalculator(
@@ -36,7 +36,7 @@ def calculate_total_energy():
             num_classes=cfg.NUM_CLASSES,
             din=cfg.DIN,
             dout=cfg.DOUT,
-            num_samples=cfg.TIME_STEPS # for time series
+            num_samples=cfg.SAMPLE_SIZE # for time series
 
         )
     else:
@@ -49,7 +49,7 @@ def calculate_total_energy():
         batch_size=cfg.BATCH_SIZE,
         processor_flops_per_second=cfg.PROCESSOR_FLOPS_PER_SECOND,
         processor_max_power=cfg.PROCESSOR_MAX_POWER,
-        num_samples=cfg.DATA_SIZE,
+        num_samples=cfg.NUM_SAMPLES,
         input_size=cfg.INPUT_SIZE,
         evaluation_strategy=cfg.EVALUATION_STRATEGY,
         k_folds=cfg.K_FOLDS,
@@ -69,12 +69,12 @@ def calculate_total_energy():
 
 
     # Calculate energy for each component
-    transmission_calculation = transmission.calculate_energy(cfg.DATA_SIZE*cfg.FLOAT_PRECISION*cfg.TIME_STEPS)
+    transmission_calculation = transmission.calculate_energy(cfg.NUM_SAMPLES*cfg.FLOAT_PRECISION*cfg.SAMPLE_SIZE)
     transmission_energy = transmission_calculation['total_energy']
-    storage_calculation = storage.calculate_energy(cfg.DATA_SIZE*cfg.FLOAT_PRECISION*cfg.TIME_STEPS)
+    storage_calculation = storage.calculate_energy(cfg.NUM_SAMPLES*cfg.FLOAT_PRECISION*cfg.SAMPLE_SIZE)
     storage_energy = storage_calculation['total_energy']
     
-    preprocessing_calculation = preprocessing.calculate_energy(cfg.DATA_SIZE*cfg.FLOAT_PRECISION, cfg.TIME_STEPS)
+    preprocessing_calculation = preprocessing.calculate_energy(cfg.NUM_SAMPLES*cfg.FLOAT_PRECISION, cfg.SAMPLE_SIZE)
     preprocessing_energy = preprocessing_calculation['total_energy']
 
     training_energy_calculation = training.calculate_energy()
