@@ -1,0 +1,127 @@
+from typing import Dict, Union
+from .protocol_configs import *
+   
+class Transmission_simple:
+    """
+    Simplified calculator for network energy consumption that allows protocol selection
+    for each OSI layer, focusing only on data and control plane overheads
+    """
+    
+    def __init__(self, 
+                 application: str = 'HTTP',
+                 presentation: str = 'TLS',
+                 session: str = 'RPC',
+                 transport: str = 'TCP',
+                 network: str = 'IPv4',
+                 datalink: str = 'ETHERNET',
+                 physical: str = 'WIFI_PHY',
+                 failure_rate: float = 0.0):
+        """
+        Initialize calculator with specific protocols for each layer
+        
+        Args:
+            failure_rate: Probability of transmission failure (0.0 to 1.0)
+        """
+        self.protocols = {
+            'application': APPLICATION_PROTOCOLS[application],
+            'presentation': PRESENTATION_PROTOCOLS[presentation],
+            'session': SESSION_PROTOCOLS[session],
+            'transport': TRANSPORT_PROTOCOLS[transport],
+            'network': NETWORK_PROTOCOLS[network],
+            'datalink': DATALINK_PROTOCOLS[datalink],
+            'physical': PHYSICAL_PROTOCOLS[physical]
+        }
+        if not 0 <= failure_rate <= 1:
+            raise ValueError("Failure rate must be between 0 and 1")
+        self.failure_rate = failure_rate
+    
+    def calculate_layer_energy(self, protocol: LayerProtocol, input_bits: int) -> Dict[str, Union[float, int]]:
+        """Calculate energy consumption for a single layer"""
+        
+        # Calculate overhead bits
+        data_plane_bits = int(input_bits * protocol.data_plane_overhead)
+        control_plane_bits = int(input_bits * protocol.control_plane_overhead)
+        
+        # Total bits at this layer
+        total_bits = input_bits + data_plane_bits + control_plane_bits
+        
+        # Calculate energy
+        total_energy = total_bits * protocol.base_energy_per_bit
+        
+        return {
+            'total_bits': total_bits,
+            'total_energy': total_energy,
+            'breakdown': {
+                'data_plane_overhead': data_plane_bits,
+                'control_plane_overhead': control_plane_bits,
+                'data_plane_energy': data_plane_bits * protocol.base_energy_per_bit,
+                'control_plane_energy': control_plane_bits * protocol.base_energy_per_bit
+            }
+        }
+    
+    def calculate_energy(self, data_bits: int) -> Dict[str, Union[float, Dict]]:
+        """Calculate energy consumption with retransmission consideration"""
+        base_result = self._calculate_single_transmission(data_bits)
+        
+        # Calculate expected number of transmissions using geometric distribution
+        # E[X] = 1/(1-p) where p is failure rate
+        expected_transmissions = 1 / (1 - self.failure_rate)
+        
+        total_energy = base_result['total_energy'] * expected_transmissions
+        total_bits = base_result['total_bits'] * expected_transmissions
+        
+        return {
+            'total_energy': total_energy,
+            'total_bits': total_bits,
+            'original_bits': data_bits,
+            'expected_transmissions': expected_transmissions,
+            'failure_rate': self.failure_rate,
+            'single_transmission': base_result,
+            'layer_breakdown': base_result['layer_breakdown']
+        }
+    
+    def _calculate_single_transmission(self, data_bits: int) -> Dict[str, Union[float, Dict]]:
+        """Original calculation logic for a single transmission"""
+        current_bits = data_bits
+        total_energy = 0
+        layer_results = {}
+        
+        for layer_name, protocol in self.protocols.items():
+            curr_layer_result = self.calculate_layer_energy(protocol, current_bits)
+            layer_results[layer_name] = {
+                'protocol': protocol.name,
+                'energy': curr_layer_result['total_energy'],
+                'breakdown': curr_layer_result['breakdown']
+            }
+            total_energy += curr_layer_result['total_energy']
+            current_bits = curr_layer_result['total_bits']
+        
+        return {
+            'total_energy': total_energy,
+            'total_bits': current_bits,
+            'original_bits': data_bits,
+            'layer_breakdown': layer_results
+        }
+
+# Usage example
+if __name__ == "__main__":
+    # Create calculator with custom protocol stack
+    calculator = Transmission_simple(
+        application='HTTP',
+        presentation='TLS',
+        session='RPC',
+        transport='TCP',
+        network='IPv4',
+        datalink='ETHERNET',
+        physical='WIFI_PHY',
+        failure_rate=0.0
+    )
+    
+    # Calculate energy for 1MB of data
+    data_size_bits = 1024 * 1024 * 8  # 1MB in bits
+    result = calculator.calculate_energy(data_size_bits)
+    
+    print(f"Total Energy: {result['total_energy']} Joules")
+    print("\nBreakdown by layer:")
+    # for layer, data in result['layer_breakdown'].items():
+    #     print(f"{layer} ({data['protocol']}): {data['energy']} Joules") 
