@@ -1,14 +1,14 @@
 from calculators.Storage import Storage
-from calculators.Transmission_simple import Transmission_simple
+from eCAL.calculators.TransmissionSimple import TransmissionSimple
 from calculators.DataPreprocessing import DataPreprocessing
 from calculators.Inference import Inference
 from calculators.Training import Training
-from calculators.model_flops import KANCalculator
+from eCAL.calculators.ModelFLOPS import KANCalculator
 import calculator_config as cfg
 
 def calculate_total_energy():
     # Initialize calculators
-    transmission = Transmission_simple(
+    transmission = TransmissionSimple(
         failure_rate=cfg.FAILURE_RATE,
         application=cfg.APPLICATION_PROTOCOLS,
         presentation=cfg.PRESENTATION_PROTOCOLS,
@@ -77,7 +77,7 @@ def calculate_total_energy():
     storage_energy = storage_calculation['total_energy']
     storage_bits = storage_calculation['details']['raw_storage_bits']
     
-    preprocessing_calculation = preprocessing.calculate_energy(cfg.NUM_SAMPLES*cfg.FLOAT_PRECISION, cfg.SAMPLE_SIZE)
+    preprocessing_calculation = preprocessing.calculate_energy(cfg.NUM_SAMPLES, cfg.SAMPLE_SIZE)
     preprocessing_energy = preprocessing_calculation['total_energy']
     preprocessing_bits = preprocessing_calculation['total_bits']
 
@@ -107,7 +107,7 @@ def calculate_total_energy():
     inference_storage_energy = inference_storage["total_energy"]
     inference_storage_bits = inference_storage["details"]["raw_storage_bits"]
 
-    inference_preprocessing = preprocessing.calculate_energy(cfg.NUM_INFERENCES*cfg.FLOAT_PRECISION, cfg.SAMPLE_SIZE)
+    inference_preprocessing = preprocessing.calculate_energy(cfg.NUM_INFERENCES, cfg.SAMPLE_SIZE)
     inference_preprocessing_energy = inference_preprocessing["total_energy"]
     inference_preprocessing_bits = inference_preprocessing["total_bits"]
     
@@ -132,6 +132,8 @@ def calculate_total_energy():
         'inference': inference_energy,
         'inference_process' : inference_process,
         'total': total_energy,
+        'Ed bits' : transmission_bits + storage_bits + preprocessing_bits + training_bits + evaluation_bits,
+        'inf_proc_bits' : inference_transmission_bits + inference_storage_bits + inference_preprocessing_bits + inference_bits,
         'total_bits' : transmission_bits + storage_bits + preprocessing_bits + training_bits + evaluation_bits + (inference_transmission_bits + inference_storage_bits + inference_preprocessing_bits + inference_bits)
     }
 

@@ -1,7 +1,7 @@
 from typing import Dict, Union
-from .protocol_configs import *
+from .ProtocolConfigs import *
    
-class Transmission_simple:
+class TransmissionSimple:
     """
     Simplified calculator for network energy consumption that allows protocol selection
     for each OSI layer, focusing only on data and control plane overheads
@@ -13,7 +13,7 @@ class Transmission_simple:
                  session: str = 'RPC',
                  transport: str = 'TCP',
                  network: str = 'IPv4',
-                 datalink: str = 'ETHERNET',
+                 datalink: str = 'WIFI_MAC',
                  physical: str = 'WIFI_PHY',
                  failure_rate: float = 0.0):
         """
@@ -106,13 +106,13 @@ class Transmission_simple:
 # Usage example
 if __name__ == "__main__":
     # Create calculator with custom protocol stack
-    calculator = Transmission_simple(
+    calculator = TransmissionSimple(
         application='HTTP',
         presentation='TLS',
         session='RPC',
         transport='TCP',
         network='IPv4',
-        datalink='ETHERNET',
+        datalink='WIFI_MAC',
         physical='WIFI_PHY',
         failure_rate=0.0
     )

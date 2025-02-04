@@ -96,9 +96,3 @@ class KANCalculator(FLOPCalculator):
             }
         }
 
-
-        raise NotImplementedError("CANCalculator is not implemented")
-        return {
-            'total_flops': 0,
-            'total_params': 0
-        }

@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from typing import Dict, Union, Tuple, Callable, Optional
-from .model_flops import FLOPCalculator, FlopsCalculatorFactory
+from .ModelFLOPS import FLOPCalculator, FlopsCalculatorFactory
 # import resnet18
 from torchvision.models import resnet18
 

@@ -49,11 +49,7 @@ class DataPreprocessing:
         else:
             calc_dict = self.calculate_flops(data_bits*time_steps)
         total_flops = calc_dict['total_flops']
-        # data_shape = calc_dict['data_shape']
-        # if data_shape is not None:
-        #     #TODO implement handling for GADF
-        #     raise NotImplementedError("GADF handling is not implemented")
-        # Calculate the total energy usage
+
         total_time = total_flops / self.processor_flops_per_second
         total_energy = total_time * self.processor_max_power
         return {

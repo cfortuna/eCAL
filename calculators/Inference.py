@@ -1,5 +1,5 @@
 from typing import Dict, Union, Tuple, Optional
-from .model_flops import FLOPCalculator, FlopsCalculatorFactory
+from .ModelFLOPS import FLOPCalculator, FlopsCalculatorFactory
 from torchvision.models import resnet18
 class Inference:
     """

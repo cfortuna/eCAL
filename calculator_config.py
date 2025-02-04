@@ -31,7 +31,7 @@ K_FOLDS = 5 # Only used if EVALUATION_STRATEGY is cross_validation
 SPLIT_RATIO = 0.8 # Only used if EVALUATION_STRATEGY is train_test_split
 
 
-#CAN specfic parameters 
+#KAN specfic parameters 
 NUM_LAYERS = 10
 GRID_SIZE = 10
 NUM_CLASSES = 10
