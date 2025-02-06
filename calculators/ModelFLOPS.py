@@ -45,54 +45,116 @@ class KANCalculator(FLOPCalculator):
         self.L = num_layers
         self.T = num_samples
         self.C = num_classes
+
+
     def calculate(self, model: nn.Module, input_size: Tuple) -> Dict[str, Union[int, Dict]]:
-        # DO CALCULATION HERE
         """
-        Source: https://arxiv.org/pdf/2411.14904v1 section 3
-        Nfp = FLOPS of non linear function * T + T * M *[9*k * (G + 1.5*k) + 2 * G -2.5k +3]
-         + (L - 2) * (FLOPS of non linear function * M + M^2 * [9k * (G + 1.5k) + 2 * G -2.5k +3])
-         + FLOPS of non linear function * M + M *C [9*k*(G + 1.5k) + 2*G - 2.5k + 3]
-
-         din * dout = M * M uniform hidden layer size
-         L - number of appropriate univariate nodes(number of layers)
-         din, dout - input and output dimensions
-         k - b-spline degree fixed to 3
-         G - grid size
-         T- number of samples?
-         C - number of classes
-
-         learnable parameters = (din * dout) *(G + k + 3)+ dout
+        Calculate FLOPs and parameters for a Kolmogorov-Arnold Network (KAN)
+        
+        Parameters:
+        - K: B-spline degree (typically 3)
+        - G: Grid size
+        - L: Number of layers
+        - M_l-1: Input dimension of the layer
+        - M_l: Output dimension of the layer
+        - M_NLF: FLOPs for non-linear function (B-spline activation)
         """
-        k = self.k  # b-spline degree
-        G = self.G  
+        K = self.k  # B-spline degree
+        G = self.G  # Grid size
+        L = self.L  # Number of layers
         
-        T = self.T
-        L = self.L
-        C = self.C
-        din = self.din
-        dout = self.dout
-        M = din * dout
-
-
+        # Constant for B-spline and grid computation
+        M_B = 9 * K * (G + 1.5 * K) + 2 * G - 2.5 * K + 3
         
-        # Non-linear function FLOPS (assuming SiLU activation) (x/1+e^(-x)) TODO check this
-        nonlinear_flops = 2 
-
+        # Assuming M_NLF is the FLOPs for B-spline activation function
+        # This might need to be precisely defined based on the specific implementation
+        M_NLF = 2  # Placeholder, adjust based on actual B-spline activation computation
         
-        first_term = nonlinear_flops * T + T * M * (9 * k * (G + 1.5 * k) + 2 * G - 2.5 * k + 3)
-        middle_term = (L - 2) * (nonlinear_flops * M + M * M * (9 * k * (G + 1.5 * k) + 2 * G - 2.5 * k + 3))
-        last_term = nonlinear_flops * M + M * C * (9 * k * (G + 1.5 * k) + 2 * G - 2.5 * k + 3)
-        
-        total_flops = first_term + middle_term + last_term
-        total_params = (din * dout) * (G + k + 3) + dout
+        # Total FLOPs calculation following the new formula
+        total_flops = 0
+        for l in range(1, L):
+            # FLOPs from B-spline activation
+            b_spline_flops = M_NLF * self.din 
+            
+            # FLOPs from input-output dimension computation with B-spline transformation
+            layer_flops = (self.din * self.din ) * M_B
+            
+            total_flops += b_spline_flops + layer_flops
+       
         
         return {
             'total_flops': int(total_flops),
-            'total_params': int(total_params),
-            'breakdown': {
-                'input_layer_flops': int(first_term),
-                'middle_layers_flops': int(middle_term),
-                'output_layer_flops': int(last_term)
-            }
+            'total_params': None
         }
+    
 
+class TransformerCalculator(FLOPCalculator):
+    def __init__(self, context_length: int, embedding_size: int, num_heads: int, num_decoder_blocks: int, feed_forward_size: int, vocab_size: int):
+        self.context_length = context_length
+        self.embedding_size = embedding_size
+        self.num_heads = num_heads
+        self.num_decoder_blocks = num_decoder_blocks
+        self.feed_forward_size = feed_forward_size
+        self.vocab_size = vocab_size
+    def calculate(self, model: nn.Module, input_size: Tuple) -> Dict[str, Union[int, Dict]]:
+        """
+        Calculate FLOPs for a Transformer model.
+        
+        Parameters:
+        - C: Context length
+        - N_embed: Embedding size
+        - N_head: Number of attention heads
+        - N_decoder_blocks: Number of decoder blocks
+        - FFS: Feed forward size
+        """
+        # Model parameters
+        C = self.context_length
+        N_embed = self.embedding_size
+        N_head = self.num_heads
+        N_decoder_blocks = self.num_decoder_blocks
+        FFS = self.feed_forward_size
+
+        # Calculate attention FLOPs (M_ATT)
+        # K, Q, V positional embedding
+        kqv_flops = C * N_embed * 3 * N_embed
+        
+        # Attention scores
+        attention_score_flops = C * C * N_embed
+        
+        # Reduce operation
+        reduce_flops = N_head * C * C * (N_embed // N_head)
+        
+        # Projection
+        projection_flops = C * N_embed * N_embed
+        
+        # Total attention FLOPs (multiplied by 2 as per equation)
+        M_ATT = 2 * (kqv_flops + attention_score_flops + reduce_flops + projection_flops)
+        
+        # MLP blocks FLOPs
+        mlp_flops = 2 * 2 * C * N_embed * FFS
+        
+        # Total Transformer FLOPs (M_TR)
+        M_TR = N_decoder_blocks * (M_ATT + mlp_flops)
+        
+ 
+        
+        total_flops = M_TR 
+        
+        # Calculate parameters
+        
+        
+        return {
+            'total_flops': int(total_flops),
+            'total_params': None,
+            'breakdown': {
+                'attention': {
+                    'kqv_embedding_flops': int(kqv_flops),
+                    'attention_score_flops': int(attention_score_flops),
+                    'reduce_flops': int(reduce_flops),
+                    'projection_flops': int(projection_flops),
+                    'total_attention_flops': int(M_ATT)
+                },
+                'mlp_blocks_flops': int(mlp_flops),
+                'per_block_flops': int(M_ATT + mlp_flops),
+            }}
+        
