@@ -22,9 +22,10 @@ NUM_DISKS = 1 # set the number of disks to use only relevant if RAID_LEVEL is no
 
 ######################################## Training ########################################
 MODEL_NAME ="KAN" # set which model to use examples: KAN, resnet18, baichuan-inc/Baichuan-13B-Chat
-NUM_EPOCHS = 10
+NUM_EPOCHS = 50
 BATCH_SIZE = 32
-INPUT_SIZE = (1, 3, 224, 224) # 4d input for resnet # (1,128) # batch, max_seq_length for llm
+# INPUT_SIZE = (1, 3, 224, 224) # 4d input for resnet # (1,128) # batch, max_seq_length for llm
+INPUT_SIZE = (1, 10) # 
 
 EVALUATION_STRATEGY = "cross_validation" # set the evaluation strategy options: cross_validation, train_test_split
 K_FOLDS = 5 # Only used if EVALUATION_STRATEGY is cross_validation
@@ -32,13 +33,18 @@ SPLIT_RATIO = 0.8 # Only used if EVALUATION_STRATEGY is train_test_split
 
 
 #KAN specfic parameters 
-NUM_LAYERS = 10
+NUM_LAYERS = 3
 GRID_SIZE = 10
-NUM_CLASSES = 10
+NUM_CLASSES = 2 
 DIN = 10
-DOUT = 10
+DOUT = 2
 
-
+# Transformer specific parameters
+CONTEXT_LENGTH = 10  
+EMBEDDING_SIZE = 16  
+NUM_HEADS = 2       
+NUM_DECODER_BLOCKS = 3  
+FEED_FORWARD_SIZE = 32  
 
 ######################################## Inference ########################################
 NUM_INFERENCES = 10000 # number of inferences to run
@@ -46,9 +52,7 @@ NUM_INFERENCES = 10000 # number of inferences to run
 
 # GENERAL CONFIG
 NUM_SAMPLES = 1000 # number of samples that are used to calculate the energy consumption
+SAMPLE_SIZE = 10 # size of a single sample e.g. number of timesteps in a timeseries or number of pixels in an image
 FLOAT_PRECISION = 64 # number of bits used to represent a floating point number
 PROCESSOR_FLOPS_PER_SECOND = 1e12 # theoretical maximum number of floating point operations per second for the processor
 PROCESSOR_MAX_POWER = 100 # maximum power consumption of the processor in Watts
-
-# Timeseries specific
-SAMPLE_SIZE = 100 # size of a single sample e.g. number of timesteps in a timeseries or number of pixels in an image
