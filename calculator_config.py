@@ -14,11 +14,6 @@ FAILURE_RATE = 0.0 # Select transmission failure rate causing retransmission giv
 ######################################## Data Preprocessing ########################################
 PREPROCESSING_TYPE = "normalization" # set the preprocessing to apply to the data options: normalization, min_max_scaling, GADF
 
-######################################## Storage ########################################
-STORAGE_TYPE = "HDD" # set the storage type to use options: HDD, SSD
-RAID_LEVEL = "NO_RAID" # set the RAID level to use options: RAID0, RAID1, RAID5, RAID6, NO_RAID
-NUM_DISKS = 1 # set the number of disks to use only relevant if RAID_LEVEL is not NO_RAID
-
 
 ######################################## Training ########################################
 MODEL_NAME ="KAN" # set which model to use examples: KAN, resnet18, baichuan-inc/Baichuan-13B-Chat
@@ -45,6 +40,7 @@ EMBEDDING_SIZE = 16
 NUM_HEADS = 2       
 NUM_DECODER_BLOCKS = 3  
 FEED_FORWARD_SIZE = 32  
+VOCAB_SIZE = 2
 
 ######################################## Inference ########################################
 NUM_INFERENCES = 10000 # number of inferences to run
@@ -56,3 +52,5 @@ SAMPLE_SIZE = 10 # size of a single sample e.g. number of timesteps in a timeser
 FLOAT_PRECISION = 64 # number of bits used to represent a floating point number
 PROCESSOR_FLOPS_PER_SECOND = 1e12 # theoretical maximum number of floating point operations per second for the processor
 PROCESSOR_MAX_POWER = 100 # maximum power consumption of the processor in Watts
+
+VIRTUALIZATION_OVERHEAD = 0.0 # percentage of energy overhead due to virtualization [0,1]

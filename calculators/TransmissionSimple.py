@@ -44,18 +44,23 @@ class TransmissionSimple:
         
         # Total bits at this layer
         total_bits = input_bits + data_plane_bits + control_plane_bits
+        first_term = total_bits * protocol.base_energy_per_bit_sender
+        second_term = total_bits * protocol.base_energy_per_bit_receiver
+        third_term = total_bits * protocol.Niot * protocol.Piot # Niot
+        fourth_term = total_bits * protocol.Ngateway * protocol.Pgateway # Ngateway
         
-        # Calculate energy
-        total_energy = total_bits * protocol.base_energy_per_bit
+        total_energy = first_term + second_term + third_term + fourth_term
+        
+  
         
         return {
             'total_bits': total_bits,
             'total_energy': total_energy,
             'breakdown': {
-                'data_plane_overhead': data_plane_bits,
-                'control_plane_overhead': control_plane_bits,
-                'data_plane_energy': data_plane_bits * protocol.base_energy_per_bit,
-                'control_plane_energy': control_plane_bits * protocol.base_energy_per_bit
+                'first_term': first_term,
+                'second_term': second_term,
+                'third_term': third_term,
+                'fourth_term': fourth_term
             }
         }
     
