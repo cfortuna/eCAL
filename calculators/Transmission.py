@@ -2,7 +2,7 @@ from typing import Dict, Union
 from .ProtocolConfigs import *
 
 
-class TransmissionSimple:
+class Transmission:
     """
     Simplified calculator for network energy consumption that allows protocol selection
     for each OSI layer, focusing only on data and control plane overheads

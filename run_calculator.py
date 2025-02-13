@@ -1,4 +1,4 @@
-from calculators.Transmission import TransmissionSimple
+from calculators.Transmission import Transmission
 from calculators.DataPreprocessing import DataPreprocessing
 from calculators.Inference import Inference
 from calculators.Training import Training
@@ -10,7 +10,7 @@ import toy_models
 
 def calculate_total_energy():
     # Initialize calculators
-    transmission = TransmissionSimple(
+    transmission = Transmission(
         failure_rate=cfg.FAILURE_RATE,
         application=cfg.APPLICATION_PROTOCOLS,
         presentation=cfg.PRESENTATION_PROTOCOLS,
