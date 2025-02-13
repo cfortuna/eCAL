@@ -1,9 +1,9 @@
-import torch
-from torch import nn
-from typing import Dict, Union, Tuple, Callable, Optional
-from .model_flops import FLOPCalculator, FlopsCalculatorFactory
+from typing import Dict, Union, Tuple, Optional
+
 # import resnet18
 from torchvision.models import resnet18
+
+from .ModelFLOPS import FLOPCalculator, FlopsCalculatorFactory
 
 
 class Training:
@@ -11,27 +11,32 @@ class Training:
     This class is used to estimate the flops of the model training, which is then used to estimate 
     the energy consumption of the model training.
     """
-    def __init__(self,model_name: str,
+
+    def __init__(self, model_name: str,
                  batch_size: int, num_epochs: int, num_samples: int,
-                 processor_flops_per_second: float, processor_max_power: int, input_size: Tuple, evaluation_strategy: str, k_folds: int, split_ratio: float, calculator: Optional[FLOPCalculator] = None):
+                 processor_flops_per_second: float, processor_max_power: int, input_size: Tuple,
+                 evaluation_strategy: str, k_folds: int, split_ratio: float,
+                 calculator: Optional[FLOPCalculator] = None):
         """
         Initialize Training class with optional custom FLOP calculator
         
         Args:
             calculator: Optional custom FLOPCalculator implementation
             input_size: Tuple of input size
-            dataset_size: int of dataset size
             batch_size: int of batch size
             num_epochs: int of number of epochs
             num_samples: int of number of samples
             processor_flops_per_second: float of processor flops per second
             processor_max_power: int of processor max power in watts
+            evaluation_strategy: str of evaluation strategy
+            k_folds: int of number of folds for cross-validation
+            split_ratio: float of split ratio for train-test split
         """
         if model_name == 'resnet18':
             self.model = resnet18()
         else:
             self.model = model_name
-            
+
         if calculator is not None:
             self.calculator = calculator
         else:
@@ -53,7 +58,7 @@ class Training:
         # hardware parameters
         self.processor_flops_per_second = processor_flops_per_second
         self.processor_max_power = processor_max_power
-        
+
     def calculate_flops_training(self) -> Dict[str, Union[int, Dict]]:
 
         forward_flops = self.calculator.calculate(self.model, self.input_size)['total_flops']
@@ -63,7 +68,7 @@ class Training:
         if self.evaluation_strategy == 'train_test_split':
             training_samples = self.num_samples * self.split_ratio
         elif self.evaluation_strategy == 'cross_validation':
-            percentage_of_samples = 1 -  (1 / self.k_folds) # percentage of samples used for training
+            percentage_of_samples = 1 - (1 / self.k_folds)  # percentage of samples used for training
             number_of_folds = self.k_folds
             training_samples = self.num_samples * percentage_of_samples * number_of_folds
 
@@ -72,13 +77,14 @@ class Training:
         # Calculate the total number of flops
         total_flops = training_flops * training_samples * self.num_epochs
         return total_flops
+
     def calculate_flops_evaluation(self) -> float:
         # Calculate the total number of flops
         forward_flops = self.calculator.calculate(self.model, self.input_size)['total_flops']
         if self.evaluation_strategy == 'train_test_split':
             evaluation_samples = self.num_samples * (1 - self.split_ratio)
         elif self.evaluation_strategy == 'cross_validation':
-            percentage_of_samples = 1 / self.k_folds # percentage of samples used for evaluation
+            percentage_of_samples = 1 / self.k_folds  # percentage of samples used for evaluation
             number_of_folds = self.k_folds
             evaluation_samples = self.num_samples * percentage_of_samples * number_of_folds
         else:
@@ -102,18 +108,4 @@ class Training:
             "total_energy": total_energy,
             "training_energy": training_energy,
             "evaluation_energy": evaluation_energy
-            }
-
-"""
-# Default usage with thop
-training = Training()
-flops = training.calculate_flops(model, input_size)
-
-# Using custom calculator for transformers
-transformer_calc = TransformerCalculator()
-training = Training(transformer_calc)
-# or
-training.set_calculator(transformer_calc)
-flops = training.calculate_flops(transformer_model, input_size)
-"""
-
+        }

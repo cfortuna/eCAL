@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Union, Tuple
-import numpy as np
+from typing import Dict, Union
+
 
 class PreprocessingFLOPCalculator(ABC):
     @abstractmethod
     def calculate_flops(self, data_size: int) -> Dict[str, Union[int, Dict]]:
         pass
+
 
 class NormalizationCalculator(PreprocessingFLOPCalculator):
     def calculate_flops(self, data_size: int) -> Dict[str, Union[int, Dict]]:
@@ -32,9 +33,8 @@ class NormalizationCalculator(PreprocessingFLOPCalculator):
 
         total_flops = (6 * data_size) + 1
 
-        
-        return {"total_flops" : total_flops,
-                "data_shape" : None
+        return {"total_flops": total_flops,
+                "data_shape": None
                 }
 
 
@@ -47,24 +47,24 @@ class MinMaxScalingCalculator(PreprocessingFLOPCalculator):
         # 2. divide by (max - min) -> data_size
         # Total FLOPS: 1 + data_size + data_size = 2 * data_size + 1
 
-        scaling_flops = data_size * 2 + 1 # 
-        
-        return {"total_flops" :     scaling_flops,
-                "data_shape" : None
+        scaling_flops = data_size * 2 + 1  #
+
+        return {"total_flops": scaling_flops,
+                "data_shape": None
                 }
 
+
 class GramianDifferenceFieldCalculator(PreprocessingFLOPCalculator):
-    def calculate_flops(self, data_size: int, time_steps : int) -> Dict[str, Union[int, Dict]]:
+    def calculate_flops(self, data_size: int, time_steps: int) -> Dict[str, Union[int, Dict]]:
         # 
         # 1. perform minmax 2 times -> 2 * data_size +1 
         # 2. compute GADF flops based on pyTS implementation - > (5 * time_steps + time_steps * time_steps) * data_size
         minmax_calculator = MinMaxScalingCalculator()
-        minmax_flops = minmax_calculator.calculate_flops(data_size* time_steps)["total_flops"]
+        minmax_flops = minmax_calculator.calculate_flops(data_size * time_steps)["total_flops"]
 
-        gadf_flops = (5*time_steps + time_steps * time_steps) * data_size
+        gadf_flops = (5 * time_steps + time_steps * time_steps) * data_size
         total_flops = minmax_flops + gadf_flops
-        total_values = data_size * time_steps * time_steps # data size increases due to timeseries to image transformation
         return {
-            "total_flops" : total_flops,
-            "data_shape" : (data_size, time_steps, time_steps)
-                }
+            "total_flops": total_flops,
+            "data_shape": (data_size, time_steps, time_steps)
+        }

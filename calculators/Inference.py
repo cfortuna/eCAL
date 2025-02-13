@@ -1,17 +1,21 @@
 from typing import Dict, Union, Tuple, Optional
-from .model_flops import FLOPCalculator, FlopsCalculatorFactory
+from .ModelFLOPS import FLOPCalculator, FlopsCalculatorFactory
 from torchvision.models import resnet18
+
+
 class Inference:
     """
     This class is used to estimate the flops of the model inference, which is then used to estimate 
     the energy consumption of the model inference.
     """
-    def __init__(self,model_name: str, input_size: Tuple, num_samples: int, processor_flops_per_second: float, processor_max_power: int, calculator: Optional[FLOPCalculator] = None):
+
+    def __init__(self, model_name: str, input_size: Tuple, num_samples: int, processor_flops_per_second: float,
+                 processor_max_power: int, calculator: Optional[FLOPCalculator] = None):
         """
         Initialize Inference class
         Args:
             calculator: FLOPCalculator implementation
-            model: PyTorch model
+            model_name: PyTorch model or model name
             input_size: Tuple of input size
             num_samples: int of number of samples
             processor_flops_per_second: float of processor flops per second
@@ -32,16 +36,8 @@ class Inference:
         self.processor_flops_per_second = processor_flops_per_second
         self.processor_max_power = processor_max_power
 
-
-    
-
     def calculate_flops(self) -> Dict[str, Union[int, Dict]]:
         """
-        Calculate FLOPs for the current inference
-        Args:
-            model: PyTorch model
-            input_size: Input tensor size
-            num_samples: Number of samples to calculate FLOPs for
 
         Returns:
             Total FLOPs for the current inference   
@@ -63,6 +59,3 @@ class Inference:
         total_time = total_flops / self.processor_flops_per_second
         total_energy = total_time * self.processor_max_power
         return total_energy
-    
-
-
