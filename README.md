@@ -24,10 +24,10 @@ To change the Control and Data plane overheads of the transmission layer or impl
 ## Citation
 If you use this tool please cite our paper: 
 ```
-@Article{chou2024energycostartificialintelligence,
+@Article{chou2025energycostartificialintelligence,
       title={The Energy Cost of Artificial Intelligence of Things Lifecycle}, 
-      author={Shih-Kai Chou and Jernej Hribar and Mihael Mohorčič and Carolina Fortuna},
-      year={2024},
+      author={Shih-Kai Chou and Jernej Hribar and Vid Hanžel and Mihael Mohorčič and Carolina Fortuna},
+      year={2025},
       eprint={2408.00540},
       archivePrefix={arXiv},
       primaryClass={cs.ET},
