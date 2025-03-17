@@ -1,5 +1,5 @@
 from typing import Dict, Union
-from .ProtocolConfigs import *
+from configs.ProtocolConfigs import *
 
 
 class Transmission:

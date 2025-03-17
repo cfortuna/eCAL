@@ -15,7 +15,7 @@ pip install transformers sentencepiece tiktoken
 ## Usage
 To run the calculator, use the following command:
 ```bash
-python run_calculator.py
+python RunCalculator.py
 ```
 ## Configuration
 The configuration is done in the `calculator_config.py` file. What specific configuration options are available can be found in the file itself.
