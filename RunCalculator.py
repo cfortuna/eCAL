@@ -3,9 +3,9 @@ from calculators.DataPreprocessing import DataPreprocessing
 from calculators.Inference import Inference
 from calculators.Training import Training
 from calculators.ModelFLOPS import KANCalculator, TransformerCalculator
-import calculator_config as cfg
+import calculators.ToyModels as toy_models
+from configs import CalculatorConfig as cfg
 
-import toy_models
 
 
 def calculate_total_energy():
