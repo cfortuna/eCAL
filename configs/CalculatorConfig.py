@@ -1,15 +1,28 @@
 ######################################## Transmission ########################################
-# select the protocol for each layer
-PHYSICAL_PROTOCOLS = "Generic_physical"  # set the protocol for the physical layer
-DATALINK_PROTOCOLS = "Generic_datalink"  # set the protocol for the datalink layer
-NETWORK_PROTOCOLS = "Generic_network"  # set the protocol for the network layer
-TRANSPORT_PROTOCOLS = "Generic_transport"  # set the protocol for the transport layer
-SESSION_PROTOCOLS = "Generic_session"  # set the protocol for the session layer
-PRESENTATION_PROTOCOLS = "Generic_presentation"  # set the protocol for the presentation layer
-APPLICATION_PROTOCOLS = "Generic_application"  # set the protocol for the application layer
+# select the protocol for each layer (you can use different protocols for each hop)
+TRANSMISSON_HOPS = {
+    "hop1": {
+    "PHYSICAL_PROTOCOLS" : "Generic_physical",  # set the protocol for the physical layer
+    "DATALINK_PROTOCOLS" : "Generic_datalink" , # set the protocol for the datalink layer
+    "NETWORK_PROTOCOLS" : "Generic_network",  # set the protocol for the network layer
+    "TRANSPORT_PROTOCOLS" : "Generic_transport",  # set the protocol for the transport layer
+    "SESSION_PROTOCOLS" : "Generic_session",  # set the protocol for the session layer
+    "PRESENTATION_PROTOCOLS" : "Generic_presentation",  # set the protocol for the presentation layer
+    "APPLICATION_PROTOCOLS" : "Generic_application",  # set the protocol for the application layer
+    "FAILURE_RATE" : 0.0  # Select transmission failure rate causing retransmission given as a float between 0 and 1
+    },
+    "hop2": {
+    "PHYSICAL_PROTOCOLS" : "Generic_physical",  # set the protocol for the physical layer
+    "DATALINK_PROTOCOLS" : "Generic_datalink" , # set the protocol for the datalink layer
+    "NETWORK_PROTOCOLS" : "Generic_network",  # set the protocol for the network layer
+    "TRANSPORT_PROTOCOLS" : "Generic_transport",  # set the protocol for the transport layer
+    "SESSION_PROTOCOLS" : "Generic_session",  # set the protocol for the session layer
+    "PRESENTATION_PROTOCOLS" : "Generic_presentation",  # set the protocol for the presentation layer
+    "APPLICATION_PROTOCOLS" : "Generic_application",  # set the protocol for the application layer
+    "FAILURE_RATE" : 0.2  # Select transmission failure rate causing retransmission given as a float between 0 and 1
+    },
 
-FAILURE_RATE = 0.0  # Select transmission failure rate causing retransmission given as a float between 0 and 1
-
+}
 ######################################## Data Preprocessing ########################################
 PREPROCESSING_TYPE = "normalization"  # set the preprocessing to apply to the data options: normalization, min_max_scaling, GADF
 DP_PROCESSOR_FLOPS_PER_SECOND = 1e10  # theoretical maximum number of floating point operations per second for the processor for preprocessing
