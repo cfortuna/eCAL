@@ -12,13 +12,17 @@ FAILURE_RATE = 0.0  # Select transmission failure rate causing retransmission gi
 
 ######################################## Data Preprocessing ########################################
 PREPROCESSING_TYPE = "normalization"  # set the preprocessing to apply to the data options: normalization, min_max_scaling, GADF
-
+DP_PROCESSOR_FLOPS_PER_SECOND = 1e10  # theoretical maximum number of floating point operations per second for the processor for preprocessing
+DP_PROCESSOR_MAX_POWER = 100 # maximum power consumption of the processor in Watts for preprocessing
 ######################################## Training ########################################
 MODEL_NAME = "KAN"  # set which model to use examples: KAN, resnet18, baichuan-inc/Baichuan-13B-Chat
 NUM_EPOCHS = 50
 BATCH_SIZE = 32
 # INPUT_SIZE = (1, 3, 224, 224) # 4d input for resnet # (1,128) # batch, max_seq_length for llm
 INPUT_SIZE = (1, 10)  #
+
+TR_PROCESSOR_FLOPS_PER_SECOND = 1e13  # theoretical maximum number of floating point operations per second for the processor for training
+TR_PROCESSOR_MAX_POWER = 100  # maximum power consumption of the processor in Watts for training
 
 EVALUATION_STRATEGY = "cross_validation"  # set the evaluation strategy options: cross_validation, train_test_split
 K_FOLDS = 5  # Only used if EVALUATION_STRATEGY is cross_validation
@@ -46,7 +50,7 @@ NUM_INFERENCES = 10000  # number of inferences to run
 NUM_SAMPLES = 1000  # number of samples that are used to calculate the energy consumption
 SAMPLE_SIZE = 10  # size of a single sample e.g. number of timesteps in a timeseries or number of pixels in an image
 FLOAT_PRECISION = 64  # number of bits used to represent a floating point number
-PROCESSOR_FLOPS_PER_SECOND = 1e12  # theoretical maximum number of floating point operations per second for the processor
-PROCESSOR_MAX_POWER = 100  # maximum power consumption of the processor in Watts
+INF_PROCESSOR_FLOPS_PER_SECOND = 1e13  # theoretical maximum number of floating point operations per second for the processor for inference
+INF_PROCESSOR_MAX_POWER = 100  # maximum power consumption of the processor in Watts for inference
 
 VIRTUALIZATION_OVERHEAD = 0.0  # percentage of energy overhead due to virtualization [0,1]

@@ -23,8 +23,8 @@ def calculate_total_energy():
 
     preprocessing = DataPreprocessing(
         preprocessing_type=cfg.PREPROCESSING_TYPE,
-        processor_flops_per_second=cfg.PROCESSOR_FLOPS_PER_SECOND,
-        processor_max_power=cfg.PROCESSOR_MAX_POWER,
+        processor_flops_per_second=cfg.DP_PROCESSOR_FLOPS_PER_SECOND,
+        processor_max_power=cfg.DP_PROCESSOR_MAX_POWER,
         time_steps=cfg.SAMPLE_SIZE,  # only needed for GADF
     )
     if cfg.MODEL_NAME == "KAN":
@@ -56,8 +56,8 @@ def calculate_total_energy():
             model_name=model,
             num_epochs=cfg.NUM_EPOCHS,
             batch_size=cfg.BATCH_SIZE,
-            processor_flops_per_second=cfg.PROCESSOR_FLOPS_PER_SECOND,
-            processor_max_power=cfg.PROCESSOR_MAX_POWER,
+            processor_flops_per_second=cfg.TR_PROCESSOR_FLOPS_PER_SECOND,
+            processor_max_power=cfg.TR_PROCESSOR_MAX_POWER,
             num_samples=cfg.NUM_SAMPLES,
             input_size=cfg.INPUT_SIZE,
             evaluation_strategy=cfg.EVALUATION_STRATEGY,
@@ -69,8 +69,8 @@ def calculate_total_energy():
             model_name=model,
             input_size=cfg.INPUT_SIZE,
             num_samples=cfg.NUM_INFERENCES,
-            processor_flops_per_second=cfg.PROCESSOR_FLOPS_PER_SECOND,
-            processor_max_power=cfg.PROCESSOR_MAX_POWER,
+            processor_flops_per_second=cfg.INF_PROCESSOR_FLOPS_PER_SECOND,
+            processor_max_power=cfg.INF_PROCESSOR_MAX_POWER,
             calculator=calculator
         )
     elif cfg.MODEL_NAME == "SimpleCNN":
@@ -80,8 +80,8 @@ def calculate_total_energy():
             model_name=model,
             num_epochs=cfg.NUM_EPOCHS,
             batch_size=cfg.BATCH_SIZE,
-            processor_flops_per_second=cfg.PROCESSOR_FLOPS_PER_SECOND,
-            processor_max_power=cfg.PROCESSOR_MAX_POWER,
+            processor_flops_per_second=cfg.TR_PROCESSOR_FLOPS_PER_SECOND,
+            processor_max_power=cfg.TR_PROCESSOR_MAX_POWER,
             num_samples=cfg.NUM_SAMPLES,
             input_size=cfg.INPUT_SIZE,
             evaluation_strategy=cfg.EVALUATION_STRATEGY,
@@ -94,8 +94,8 @@ def calculate_total_energy():
             model_name=model,
             input_size=cfg.INPUT_SIZE,
             num_samples=cfg.NUM_INFERENCES,
-            processor_flops_per_second=cfg.PROCESSOR_FLOPS_PER_SECOND,
-            processor_max_power=cfg.PROCESSOR_MAX_POWER,
+            processor_flops_per_second=cfg.INF_PROCESSOR_FLOPS_PER_SECOND,
+            processor_max_power=cfg.INF_PROCESSOR_MAX_POWER,
             calculator=calculator
         )
     else:
@@ -103,8 +103,8 @@ def calculate_total_energy():
             model_name=cfg.MODEL_NAME,
             num_epochs=cfg.NUM_EPOCHS,
             batch_size=cfg.BATCH_SIZE,
-            processor_flops_per_second=cfg.PROCESSOR_FLOPS_PER_SECOND,
-            processor_max_power=cfg.PROCESSOR_MAX_POWER,
+            processor_flops_per_second=cfg.TR_PROCESSOR_FLOPS_PER_SECOND,
+            processor_max_power=cfg.TR_PROCESSOR_MAX_POWER,
             num_samples=cfg.NUM_SAMPLES,
             input_size=cfg.INPUT_SIZE,
             evaluation_strategy=cfg.EVALUATION_STRATEGY,
@@ -117,8 +117,8 @@ def calculate_total_energy():
             model_name=cfg.MODEL_NAME,
             input_size=cfg.INPUT_SIZE,
             num_samples=cfg.NUM_INFERENCES,
-            processor_flops_per_second=cfg.PROCESSOR_FLOPS_PER_SECOND,
-            processor_max_power=cfg.PROCESSOR_MAX_POWER,
+            processor_flops_per_second=cfg.INF_PROCESSOR_FLOPS_PER_SECOND,
+            processor_max_power=cfg.INF_PROCESSOR_MAX_POWER,
             calculator=calculator
         )
 
