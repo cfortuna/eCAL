@@ -135,6 +135,9 @@ def calculate_total_energy():
             transmission_calculation = transmission.calculate_energy(cfg.NUM_SAMPLES * cfg.FLOAT_PRECISION * cfg.SAMPLE_SIZE)
             transmission_energy += transmission_calculation['total_energy']
 
+    # Add wired overhead
+    transmission_energy = transmission_energy * (1 + cfg.WIRED_OVERHEAD)
+
     preprocessing_calculation = preprocessing.calculate_energy(cfg.NUM_SAMPLES, cfg.SAMPLE_SIZE)
     preprocessing_energy = preprocessing_calculation['total_energy']
 

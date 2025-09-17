@@ -23,6 +23,9 @@ TRANSMISSON_HOPS = {
     },
 
 }
+
+WIRED_OVERHEAD = 0.10  # percentage of energy overhead due to wired transmission [0,1]
+
 ######################################## Data Preprocessing ########################################
 PREPROCESSING_TYPE = "normalization"  # set the preprocessing to apply to the data options: normalization, min_max_scaling, GADF
 DP_PROCESSOR_FLOPS_PER_SECOND = 1e10  # theoretical maximum number of floating point operations per second for the processor for preprocessing
@@ -30,7 +33,7 @@ DP_PROCESSOR_MAX_POWER = 100 # maximum power consumption of the processor in Wat
 ######################################## Training ########################################
 MODEL_NAME = "KAN"  # set which model to use examples: KAN, resnet18, baichuan-inc/Baichuan-13B-Chat
 NUM_EPOCHS = 50
-BATCH_SIZE = 32
+BATCH_SIZE = 64
 # INPUT_SIZE = (1, 3, 224, 224) # 4d input for resnet # (1,128) # batch, max_seq_length for llm
 INPUT_SIZE = (1, 10)  #
 
