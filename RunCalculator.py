@@ -132,11 +132,9 @@ def calculate_total_energy():
     
     for hop in transmission_dict:
             transmission = transmission_dict[hop]
-            wired_overhead = cfg.TRANSMISSON_HOPS[hop]["WIRED_OVERHEAD"]
             transmission_calculation = transmission.calculate_energy(cfg.NUM_SAMPLES * cfg.FLOAT_PRECISION * cfg.SAMPLE_SIZE)
             transmission_energy += transmission_calculation['total_energy']
-            # wired overhead is added after the loop
-            transmission_energy = transmission_energy * (1 + wired_overhead)
+
 
 
 

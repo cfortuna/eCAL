@@ -9,8 +9,7 @@ TRANSMISSON_HOPS = {
     "SESSION_PROTOCOLS" : "Generic_session",  # set the protocol for the session layer
     "PRESENTATION_PROTOCOLS" : "Generic_presentation",  # set the protocol for the presentation layer
     "APPLICATION_PROTOCOLS" : "Generic_application",  # set the protocol for the application layer
-    "FAILURE_RATE" : 0.0,  # Select transmission failure rate causing retransmission given as a float between 0 and 1
-    "WIRED_OVERHEAD" : 0.0  # percentage of additional energy consumption due to wired transmission [0,1]
+    "FAILURE_RATE" : 0.0  # Select transmission failure rate causing retransmission given as a float between 0 and 1
     },
     "hop2": {
     "PHYSICAL_PROTOCOLS" : "Generic_physical",  # set the protocol for the physical layer
@@ -20,9 +19,7 @@ TRANSMISSON_HOPS = {
     "SESSION_PROTOCOLS" : "Generic_session",  # set the protocol for the session layer
     "PRESENTATION_PROTOCOLS" : "Generic_presentation",  # set the protocol for the presentation layer
     "APPLICATION_PROTOCOLS" : "Generic_application",  # set the protocol for the application layer
-    "FAILURE_RATE" : 0.2,  # Select transmission failure rate causing retransmission given as a float between 0 and 1
-    "WIRED_OVERHEAD" : 0.10  # percentage of energy overhead due to wired transmission [0,1]
-
+    "FAILURE_RATE" : 0.2  # Select transmission failure rate causing retransmission given as a float between 0 and 1
     },
 
 }
