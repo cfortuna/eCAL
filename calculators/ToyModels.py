@@ -34,7 +34,6 @@ class SimpleCNN(nn.Module):
         
         # Create convolutional layers
         for i in range(num_layers):
-            print(i)
             # More controlled channel growth
             out_channels = hidden_channels * (2 if i > 0 else 1)
             
