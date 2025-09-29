@@ -75,12 +75,12 @@ class KANCalculator(FLOPCalculator):
 
         # Total FLOPs calculation following the new formula
         total_flops = 0
-        for l in range(0, L-1):
+        for l in range(1, L):
             # FLOPs from B-spline activation
-            b_spline_flops = M_NLF * self.din[l]
+            b_spline_flops = M_NLF * self.din
 
             # FLOPs from input-output dimension computation with B-spline transformation
-            layer_flops = (self.din[l] * self.din[l]) * M_B
+            layer_flops = (self.din * self.din) * M_B
 
             total_flops += b_spline_flops + layer_flops
 
