@@ -60,7 +60,7 @@ class MLPCalculator(FLOPCalculator):
 
         # Total FLOPs calculation following the new formula
         total_flops = 0
-        for l in range(0, len(L)-1):
+        for l in range(0, L-1):
 
             # FLOPs from input-output dimension computation 
             layer_flops = 2 * (self.din * self.din) + 2 * self.din
