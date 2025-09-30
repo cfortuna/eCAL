@@ -31,7 +31,7 @@ def calculate_total_energy():
         time_steps=cfg.SAMPLE_SIZE,  # only needed for GADF
     )
     if cfg.MODEL_NAME == "MLP":
-        calculator = KANCalculator(
+        calculator = MLPCalculator(
             num_layers=cfg.NUM_LAYERS,
             num_classes=cfg.NUM_CLASSES,
             din=cfg.DIN,
@@ -40,7 +40,7 @@ def calculate_total_energy():
 
         )
     elif cfg.MODEL_NAME == "CNN":
-        calculator = KANCalculator(
+        calculator = CNNCalculator(
             num_cnv_layers=cfg.NUM_CONV_LAYERS,
             num_pool_layers=cfg.NUM_POOL_LAYERS,
             i_r=cfg.I_R,
@@ -49,8 +49,6 @@ def calculate_total_energy():
             k_c=cfg.K_C,
             c_in=cfg.C_IN,
             num_classes=cfg.NUM_CLASSES,
-            din=cfg.DIN,
-            dout=cfg.DOUT,
             num_samples=cfg.SAMPLE_SIZE  # for time series
 
         )
