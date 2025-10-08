@@ -99,15 +99,15 @@ class SimpleCNN_practical(nn.Module):
     """
     A simple 1D Convolutional Neural Network (CNN) for sequence or feature vector regression.
     """
-    def __init__(self, output_size=2, hidden_channels=16, num_layers=3):
+    def __init__(self, input_size=10, output_size=2, hidden_channels=16, num_layers=3):
         super(SimpleCNN_practical, self).__init__()
         self.layers = nn.ModuleList()
         # Input data is expected to be reshaped to have 1 channel.
         current_channels = 1  
         
         # Create convolutional blocks with increasing channel depth
-        for i in range(num_layers):
-            out_channels = hidden_channels * (2**i) # e.g., 16 -> 32 -> 64
+        for i in range(1, num_layers):
+            out_channels = hidden_channels * (2 ** i)
             conv_block = nn.Sequential(
                 nn.Conv1d(current_channels, out_channels, kernel_size=3, padding=1),
                 #nn.BatchNorm1d(out_channels),
@@ -138,7 +138,7 @@ class KANLikeRegressor(nn.Module):
         super(KANLikeRegressor, self).__init__()
         self.input_dim = din
 
-        architecture = [din] + [din] * (num_layers - 2) + [dout]
+        architecture = [din] + [din] * (num_layers) + [dout]
 
         self.kan = KAN(architecture, grid_size=grid_size, 
                         spline_order=3)

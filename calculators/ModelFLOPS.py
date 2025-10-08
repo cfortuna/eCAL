@@ -60,7 +60,7 @@ class MLPCalculator(FLOPCalculator):
 
         # Total FLOPs calculation following the new formula
         total_flops = 0
-        for l in range(0, L):
+        for l in range(0, L - 1):
 
             # FLOPs from input-output dimension computation 
             layer_flops = 2 * (self.din * self.din) + 2 * self.din
@@ -109,7 +109,7 @@ class CNNCalculator(FLOPCalculator):
         output_width = 0
         # Total FLOPs calculation following the new formula
         total_flops = 0
-        for c in range(0, num_cnv_layers):
+        for c in range(0, num_cnv_layers - 1):
 
             # FLOPs from convolutional layers
             output_height = (input_height - self.k_r + 2 * self.p_r) / self.s_r + 1
